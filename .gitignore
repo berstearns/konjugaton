@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Tooling caches
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.basedpyright/
+
+# State produced at runtime (XDG state dir is default; this catches local runs)
+*.konjugaton-state.json
+.konjugaton/
+
+# Editor / OS
+.DS_Store
+*.swp

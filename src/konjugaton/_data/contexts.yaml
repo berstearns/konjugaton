@@ -1,0 +1,55 @@
+# Semantic contexts — the "where does this verb live" axis.
+#
+# Each context supplies sentence templates with two slots:
+#   {subject}  -> the subject pronoun (ich/du/Sie/...)
+#   {verb}     -> the conjugated verb complex (blanked to a cloze for production)
+#
+# German main clauses are verb-second; we keep the subject first ("{subject}
+# {verb} …") so the "{subject} {verb}" token stays contiguous for the cloze.
+# `affinity` (optional) lists verbs that feel natural here (a soft preference).
+
+contexts:
+  - id: alltag
+    label_de: Alltag
+    label_en: Daily life
+    templates:
+      - "{subject} {verb} jeden Tag."
+      - "{subject} {verb} morgens."
+      - "{subject} {verb} zu Hause."
+    affinity: [machen, essen, schlafen, aufstehen, sehen]
+
+  - id: reise
+    label_de: Reise
+    label_en: Travel
+    templates:
+      - "{subject} {verb} unterwegs."
+      - "{subject} {verb} im Urlaub."
+      - "{subject} {verb} bald."
+    affinity: [fahren, gehen, kommen, ankommen, mitkommen]
+
+  - id: arbeit
+    label_de: Arbeit
+    label_en: Work
+    templates:
+      - "{subject} {verb} im Büro."
+      - "{subject} {verb} jede Woche."
+      - "{subject} {verb} mit Kollegen."
+    affinity: [machen, sagen, bringen, sprechen, arbeiten]
+
+  - id: studium
+    label_de: Studium
+    label_en: Studies
+    templates:
+      - "{subject} {verb} in der Schule."
+      - "{subject} {verb} für die Prüfung."
+      - "{subject} {verb} viel."
+    affinity: [lernen, denken, finden, sehen, sprechen]
+
+  - id: gefuehle
+    label_de: Gefühle
+    label_en: Emotions
+    templates:
+      - "{subject} {verb} wirklich."
+      - "{subject} {verb} gern."
+      - "{subject} {verb} oft."
+    affinity: [sagen, denken, sehen, geben, spielen]

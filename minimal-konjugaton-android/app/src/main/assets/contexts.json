@@ -1,0 +1,109 @@
+{
+  "contexts": [
+    {
+      "id": "rozmarra",
+      "label_hi": "रोज़मर्रा",
+      "label_en": "Daily life",
+      "templates": [
+        "रोज़ {subject} {verb}।",
+        "सुबह {subject} {verb}।",
+        "घर पर {subject} {verb}।"
+      ],
+      "templates_roman": [
+        "roz {subject} {verb}.",
+        "subah {subject} {verb}.",
+        "ghar par {subject} {verb}."
+      ],
+      "affinity": [
+        "बोलना",
+        "देखना",
+        "सुनना",
+        "खाना",
+        "सोना"
+      ]
+    },
+    {
+      "id": "safar",
+      "label_hi": "सफ़र",
+      "label_en": "Travel",
+      "templates": [
+        "सफ़र में {subject} {verb}।",
+        "बाहर {subject} {verb}।",
+        "जाने से पहले {subject} {verb}।"
+      ],
+      "templates_roman": [
+        "safar mein {subject} {verb}.",
+        "baahar {subject} {verb}.",
+        "jaane se pahle {subject} {verb}."
+      ],
+      "affinity": [
+        "जाना",
+        "आना",
+        "चलना",
+        "देखना"
+      ]
+    },
+    {
+      "id": "kaam",
+      "label_hi": "काम",
+      "label_en": "Work",
+      "templates": [
+        "दफ़्तर में {subject} {verb}।",
+        "साथियों के साथ {subject} {verb}।",
+        "हर हफ़्ते {subject} {verb}।"
+      ],
+      "templates_roman": [
+        "daftar mein {subject} {verb}.",
+        "saathiyon ke saath {subject} {verb}.",
+        "har hafte {subject} {verb}."
+      ],
+      "affinity": [
+        "करना",
+        "बोलना",
+        "लिखना",
+        "मिलना"
+      ]
+    },
+    {
+      "id": "padhai",
+      "label_hi": "पढ़ाई",
+      "label_en": "Studies",
+      "templates": [
+        "स्कूल में {subject} {verb}।",
+        "परीक्षा के लिए {subject} {verb}।",
+        "किताब से {subject} {verb}।"
+      ],
+      "templates_roman": [
+        "school mein {subject} {verb}.",
+        "pariksha ke liye {subject} {verb}.",
+        "kitab se {subject} {verb}."
+      ],
+      "affinity": [
+        "पढ़ना",
+        "लिखना",
+        "समझना",
+        "देखना"
+      ]
+    },
+    {
+      "id": "bhavnaen",
+      "label_hi": "भावनाएँ",
+      "label_en": "Emotions",
+      "templates": [
+        "ख़ुशी से {subject} {verb}।",
+        "सचमुच {subject} {verb}।",
+        "बिना सोचे {subject} {verb}।"
+      ],
+      "templates_roman": [
+        "khushi se {subject} {verb}.",
+        "sachmuch {subject} {verb}.",
+        "bina soche {subject} {verb}."
+      ],
+      "affinity": [
+        "कहना",
+        "देखना",
+        "समझना"
+      ]
+    }
+  ]
+}

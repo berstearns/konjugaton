@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install project (with dev extras)
+        run: uv pip install --system -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Format check (ruff)
+        run: ruff format --check .
+
+      - name: Type check (basedpyright, strict)
+        run: basedpyright
+
+      - name: Tests (pytest)
+        run: pytest
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Build sdist + wheel
+        run: uv build
+      - name: Verify bundled data is packaged
+        run: |
+          python -m zipfile -l dist/*.whl | grep -E "_data/(verbs|endings|contexts)\.yaml" \
+            || (echo "::error::data YAML missing from wheel" && exit 1)
+
+  # The deploy-bug gate: compile the real Nuitka binary and self-check it in a
+  # CLEAN environment (no Python on PATH). This is what catches packaging /
+  # data-bundling / module-pruning regressions that unit tests cannot see.
+  # Critical for konjugaton: Devanagari is multi-byte UTF-8, so the encoding path
+  # is exercised under env -i (ASCII locale) too.
+  binary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: extractions/setup-just@v2
+      - run: uv python install 3.12
+      - name: Install (with build extras) + patchelf
+        run: |
+          uv venv .venv
+          uv pip install --python .venv -e ".[dev]" patchelf
+      - name: Compile the standalone binary
+        run: just build
+      - name: Self-check the binary with NO Python in the environment
+        run: env -i ./dist/konjugaton selfcheck
+      - name: Smoke the data path with no Python
+        run: env -i ./dist/konjugaton catalog | tail -3

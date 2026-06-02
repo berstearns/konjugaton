@@ -1,0 +1,133 @@
+[project]
+name = "konjugaton"
+version = "0.1.0"
+description = "Hyper-combinatorial grammar practice engine — exhaustive, IRT-scored verb drilling over a data-driven taxonomy. Hindi (Devanagari + romanization) first, language-agnostic core."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Bernardo Stearns", email = "bernardo.stearns@proton.me" }]
+keywords = [
+  "language-learning",
+  "hindi",
+  "devanagari",
+  "conjugation",
+  "grammar",
+  "item-response-theory",
+  "spaced-repetition",
+  "cli",
+  "tui",
+]
+classifiers = [
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Education",
+  "Typing :: Typed",
+]
+# Core runtime is deliberately pure-Python (+ pydantic_core) so the Nuitka
+# binary stays small and compiles fast. Heavy/native extras are opt-in.
+dependencies = [
+  "typer>=0.12",
+  "pydantic>=2.6",
+  "pyyaml>=6.0",
+  "rich>=13.7",
+]
+
+[project.optional-dependencies]
+# Terminal UI (Textual). Not needed for the CLI or the lean binary.
+tui = ["textual>=0.60"]
+# Compile a standalone native binary.
+build = ["nuitka>=2.4"]
+dev = [
+  "ruff>=0.5",
+  "basedpyright>=1.13",
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "pre-commit>=3.7",
+  "types-PyYAML",
+  "textual>=0.60",
+  "nuitka>=2.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/berstearns/konjugaton"
+Repository = "https://github.com/berstearns/konjugaton"
+Issues = "https://github.com/berstearns/konjugaton/issues"
+
+[project.scripts]
+konjugaton = "konjugaton.cli.app:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/konjugaton"]
+artifacts = ["*.yaml"]
+
+# ---------------------------------------------------------------------------
+# Linting & formatting — ruff (single tool for both)
+# ---------------------------------------------------------------------------
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes
+  "I",    # isort
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "SIM",  # flake8-simplify
+  "C4",   # comprehensions
+  "PTH",  # use pathlib
+  "RUF",  # ruff-specific
+  "N",    # pep8-naming
+  "ARG",  # unused arguments
+  "TID",  # tidy imports
+  "PL",   # pylint
+]
+# TCH/flake8-type-checking is intentionally NOT enabled: Pydantic v2 resolves
+# annotations at runtime, so moving domain enums into TYPE_CHECKING blocks would
+# break validation. The rule fights the framework here.
+ignore = [
+  "PLR0913", # value objects legitimately take many fields
+  "PLR2004", # magic values are fine in heuristics/tables
+  "RUF001",  # ambiguous-unicode in strings: Devanagari is the whole point
+  "RUF002",  # ambiguous-unicode in docstrings: ditto
+  "RUF003",  # ambiguous-unicode in comments: ditto
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["konjugaton"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLR2004", "S101"]
+# The ground-truth case table is full of Devanagari string literals whose
+# display width trips E501; keeping each (input → expected) on one line is what
+# makes the table auditable, so E501 is waived for this data file only.
+"tests/test_conjugator.py" = ["PLR2004", "S101", "E501"]
+# typer.Option(...) defaults are the framework idiom, not a B008 bug.
+"src/konjugaton/cli/*" = ["B008"]
+
+# ---------------------------------------------------------------------------
+# Type checking — basedpyright in strict mode
+# ---------------------------------------------------------------------------
+[tool.basedpyright]
+include = ["src", "tests"]
+typeCheckingMode = "strict"
+pythonVersion = "3.11"
+reportMissingTypeStubs = false
+reportUnknownMemberType = false   # pandas/numpy dynamic surfaces
+reportUnknownArgumentType = false
+reportUnknownVariableType = false
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers"
+testpaths = ["tests"]
+
+[tool.coverage.run]
+source = ["konjugaton"]
+branch = true

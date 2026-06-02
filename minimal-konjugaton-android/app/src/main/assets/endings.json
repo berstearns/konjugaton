@@ -1,0 +1,164 @@
+{
+  "imperfective": {
+    "devanagari": {
+      "sg|m": "ता",
+      "sg|f": "ती",
+      "pl|m": "ते",
+      "pl|f": "तीं"
+    },
+    "romanized": {
+      "sg|m": "ta",
+      "sg|f": "ti",
+      "pl|m": "te",
+      "pl|f": "tin"
+    }
+  },
+  "perfective": {
+    "devanagari": {
+      "sg|m": "ा",
+      "sg|f": "ी",
+      "pl|m": "े",
+      "pl|f": "ीं"
+    },
+    "romanized": {
+      "sg|m": "a",
+      "sg|f": "i",
+      "pl|m": "e",
+      "pl|f": "in"
+    }
+  },
+  "perfective_glide": {
+    "devanagari": {
+      "sg|m": "या",
+      "sg|f": "यी",
+      "pl|m": "ये",
+      "pl|f": "यीं"
+    },
+    "romanized": {
+      "sg|m": "ya",
+      "sg|f": "yi",
+      "pl|m": "ye",
+      "pl|f": "yin"
+    }
+  },
+  "future": {
+    "devanagari": {
+      "1|sg|neutral": "ूँ",
+      "1|pl|neutral": "ें",
+      "2|sg|tu": "े",
+      "2|pl|tum": "ो",
+      "2|pl|aap": "ें",
+      "3|sg|neutral": "े",
+      "3|pl|neutral": "ें",
+      "3|pl|aap": "ें"
+    },
+    "romanized": {
+      "1|sg|neutral": "un",
+      "1|pl|neutral": "en",
+      "2|sg|tu": "e",
+      "2|pl|tum": "o",
+      "2|pl|aap": "en",
+      "3|sg|neutral": "e",
+      "3|pl|neutral": "en",
+      "3|pl|aap": "en"
+    }
+  },
+  "future_tail": {
+    "devanagari": {
+      "sg|m": "गा",
+      "sg|f": "गी",
+      "pl|m": "गे",
+      "pl|f": "गी"
+    },
+    "romanized": {
+      "sg|m": "ga",
+      "sg|f": "gi",
+      "pl|m": "ge",
+      "pl|f": "gi"
+    }
+  },
+  "subjunctive": {
+    "devanagari": {
+      "1|sg|neutral": "ूँ",
+      "1|pl|neutral": "ें",
+      "2|sg|tu": "े",
+      "2|pl|tum": "ो",
+      "2|pl|aap": "ें",
+      "3|sg|neutral": "े",
+      "3|pl|neutral": "ें",
+      "3|pl|aap": "ें"
+    },
+    "romanized": {
+      "1|sg|neutral": "un",
+      "1|pl|neutral": "en",
+      "2|sg|tu": "e",
+      "2|pl|tum": "o",
+      "2|pl|aap": "en",
+      "3|sg|neutral": "e",
+      "3|pl|neutral": "en",
+      "3|pl|aap": "en"
+    }
+  },
+  "imperative": {
+    "devanagari": {
+      "tu": "",
+      "tum": "ो",
+      "aap": "िए"
+    },
+    "romanized": {
+      "tu": "",
+      "tum": "o",
+      "aap": "iye"
+    }
+  },
+  "hona_present": {
+    "devanagari": {
+      "1|sg|neutral": "हूँ",
+      "1|pl|neutral": "हैं",
+      "2|sg|tu": "है",
+      "2|pl|tum": "हो",
+      "2|pl|aap": "हैं",
+      "3|sg|neutral": "है",
+      "3|pl|neutral": "हैं",
+      "3|pl|aap": "हैं"
+    },
+    "romanized": {
+      "1|sg|neutral": "hun",
+      "1|pl|neutral": "hain",
+      "2|sg|tu": "hai",
+      "2|pl|tum": "ho",
+      "2|pl|aap": "hain",
+      "3|sg|neutral": "hai",
+      "3|pl|neutral": "hain",
+      "3|pl|aap": "hain"
+    }
+  },
+  "hona_past": {
+    "devanagari": {
+      "sg|m": "था",
+      "sg|f": "थी",
+      "pl|m": "थे",
+      "pl|f": "थीं"
+    },
+    "romanized": {
+      "sg|m": "tha",
+      "sg|f": "thi",
+      "pl|m": "the",
+      "pl|f": "thin"
+    }
+  },
+  "progressive": {
+    "devanagari": {
+      "sg|m": "रहा",
+      "sg|f": "रही",
+      "pl|m": "रहे",
+      "pl|f": "रहीं"
+    },
+    "romanized": {
+      "sg|m": "raha",
+      "sg|f": "rahi",
+      "pl|m": "rahe",
+      "pl|f": "rahin"
+    }
+  }
+}

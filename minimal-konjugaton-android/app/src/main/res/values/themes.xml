@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Platform-level theme only. All real colours/typography come from Compose's
+     MaterialTheme (MainActivity). This just gives a NoActionBar window and a
+     transparent status bar for edge-to-edge. Dependency-free: no material lib. -->
+<resources>
+    <style name="Theme.App" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

@@ -1,0 +1,37 @@
+# German regular-conjugation ending tables.
+#
+# Keyed by the person|number slot (1|sg … 3|pl). The conjugator appends these to
+# a stem (with epenthetic-e and s-drop orthography handled in code). German is
+# single-script, so there is one table per paradigm.
+
+praesens:        # ich mache, du machst, er macht, wir machen, ihr macht, sie machen
+  "1|sg": "e"
+  "2|sg": "st"
+  "3|sg": "t"
+  "1|pl": "en"
+  "2|pl": "t"
+  "3|pl": "en"
+
+praeteritum_weak:   # applied AFTER stem+"te": machte, machtest, machte, machten, machtet, machten
+  "1|sg": ""
+  "2|sg": "st"
+  "3|sg": ""
+  "1|pl": "n"
+  "2|pl": "t"
+  "3|pl": "n"
+
+praeteritum_strong: # applied to the ablaut stem: ging, gingst, ging, gingen, gingt, gingen
+  "1|sg": ""
+  "2|sg": "st"
+  "3|sg": ""
+  "1|pl": "en"
+  "2|pl": "t"
+  "3|pl": "en"
+
+konjunktiv:      # K1 and K2 share endings: mache, machest, mache, machen, machet, machen
+  "1|sg": "e"
+  "2|sg": "est"
+  "3|sg": "e"
+  "1|pl": "en"
+  "2|pl": "et"
+  "3|pl": "en"

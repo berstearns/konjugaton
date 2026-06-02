@@ -1,0 +1,380 @@
+{
+  "verbs": [
+    {
+      "lemma": "करना",
+      "lemma_roman": "karna",
+      "verb_class": "irregular",
+      "transitivity": "transitive",
+      "translation": "to do/make",
+      "frequency_rank": 1,
+      "semantic_tags": [
+        "core",
+        "action"
+      ],
+      "conjugation": {
+        "imperative_aap": "कीजिए",
+        "imperative_aap_roman": "kijiye",
+        "perfective": {
+          "devanagari": {
+            "sg|m": "किया",
+            "sg|f": "की",
+            "pl|m": "किए",
+            "pl|f": "कीं"
+          },
+          "romanized": {
+            "sg|m": "kiya",
+            "sg|f": "ki",
+            "pl|m": "kiye",
+            "pl|f": "kin"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "होना",
+      "lemma_roman": "hona",
+      "verb_class": "irregular",
+      "transitivity": "intransitive",
+      "translation": "to be/become",
+      "frequency_rank": 2,
+      "semantic_tags": [
+        "core",
+        "state"
+      ],
+      "conjugation": {
+        "future_oblique": "हो",
+        "future_oblique_roman": "ho",
+        "perfective": {
+          "devanagari": {
+            "sg|m": "हुआ",
+            "sg|f": "हुई",
+            "pl|m": "हुए",
+            "pl|f": "हुईं"
+          },
+          "romanized": {
+            "sg|m": "hua",
+            "sg|f": "hui",
+            "pl|m": "hue",
+            "pl|f": "huin"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "जाना",
+      "lemma_roman": "jana",
+      "verb_class": "irregular",
+      "transitivity": "intransitive",
+      "translation": "to go",
+      "frequency_rank": 3,
+      "family": "jana",
+      "semantic_tags": [
+        "core",
+        "movement"
+      ],
+      "conjugation": {
+        "perfective": {
+          "devanagari": {
+            "sg|m": "गया",
+            "sg|f": "गई",
+            "pl|m": "गए",
+            "pl|f": "गईं"
+          },
+          "romanized": {
+            "sg|m": "gaya",
+            "sg|f": "gai",
+            "pl|m": "gaye",
+            "pl|f": "gain"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "देना",
+      "lemma_roman": "dena",
+      "verb_class": "irregular",
+      "transitivity": "transitive",
+      "translation": "to give",
+      "frequency_rank": 6,
+      "family": "dena",
+      "semantic_tags": [
+        "transaction"
+      ],
+      "conjugation": {
+        "future_oblique": "द",
+        "future_oblique_roman": "d",
+        "imperative_aap": "दीजिए",
+        "imperative_aap_roman": "dijiye",
+        "perfective": {
+          "devanagari": {
+            "sg|m": "दिया",
+            "sg|f": "दी",
+            "pl|m": "दिए",
+            "pl|f": "दीं"
+          },
+          "romanized": {
+            "sg|m": "diya",
+            "sg|f": "di",
+            "pl|m": "diye",
+            "pl|f": "din"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "लेना",
+      "lemma_roman": "lena",
+      "verb_class": "irregular",
+      "transitivity": "transitive",
+      "translation": "to take",
+      "frequency_rank": 7,
+      "family": "lena",
+      "semantic_tags": [
+        "transaction"
+      ],
+      "conjugation": {
+        "future_oblique": "ल",
+        "future_oblique_roman": "l",
+        "imperative_aap": "लीजिए",
+        "imperative_aap_roman": "lijiye",
+        "perfective": {
+          "devanagari": {
+            "sg|m": "लिया",
+            "sg|f": "ली",
+            "pl|m": "लिए",
+            "pl|f": "लीं"
+          },
+          "romanized": {
+            "sg|m": "liya",
+            "sg|f": "li",
+            "pl|m": "liye",
+            "pl|f": "lin"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "पीना",
+      "lemma_roman": "pina",
+      "verb_class": "irregular",
+      "transitivity": "transitive",
+      "translation": "to drink",
+      "frequency_rank": 40,
+      "semantic_tags": [
+        "consumption"
+      ],
+      "conjugation": {
+        "future_oblique": "पि",
+        "future_oblique_roman": "pi",
+        "imperative_aap": "पीजिए",
+        "imperative_aap_roman": "pijiye",
+        "perfective": {
+          "devanagari": {
+            "sg|m": "पिया",
+            "sg|f": "पी",
+            "pl|m": "पिए",
+            "pl|f": "पीं"
+          },
+          "romanized": {
+            "sg|m": "piya",
+            "sg|f": "pi",
+            "pl|m": "piye",
+            "pl|f": "pin"
+          }
+        }
+      }
+    },
+    {
+      "lemma": "खाना",
+      "lemma_roman": "khana",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to eat",
+      "frequency_rank": 25,
+      "semantic_tags": [
+        "consumption"
+      ]
+    },
+    {
+      "lemma": "आना",
+      "lemma_roman": "ana",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to come",
+      "frequency_rank": 9,
+      "family": "ana",
+      "semantic_tags": [
+        "movement",
+        "core"
+      ]
+    },
+    {
+      "lemma": "सोना",
+      "lemma_roman": "sona",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to sleep",
+      "frequency_rank": 80,
+      "semantic_tags": [
+        "body"
+      ]
+    },
+    {
+      "lemma": "बोलना",
+      "lemma_roman": "bolna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to speak",
+      "frequency_rank": 30,
+      "semantic_tags": [
+        "communication"
+      ]
+    },
+    {
+      "lemma": "पढ़ना",
+      "lemma_roman": "parhna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to read/study",
+      "frequency_rank": 35,
+      "semantic_tags": [
+        "cognition",
+        "studies"
+      ]
+    },
+    {
+      "lemma": "लिखना",
+      "lemma_roman": "likhna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to write",
+      "frequency_rank": 45,
+      "semantic_tags": [
+        "communication",
+        "studies"
+      ]
+    },
+    {
+      "lemma": "देखना",
+      "lemma_roman": "dekhna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to see/watch",
+      "frequency_rank": 12,
+      "semantic_tags": [
+        "perception"
+      ]
+    },
+    {
+      "lemma": "सुनना",
+      "lemma_roman": "sunna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to hear/listen",
+      "frequency_rank": 33,
+      "semantic_tags": [
+        "perception"
+      ]
+    },
+    {
+      "lemma": "समझना",
+      "lemma_roman": "samajhna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to understand",
+      "frequency_rank": 60,
+      "semantic_tags": [
+        "cognition"
+      ]
+    },
+    {
+      "lemma": "चलना",
+      "lemma_roman": "chalna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to walk/move",
+      "frequency_rank": 28,
+      "semantic_tags": [
+        "movement"
+      ]
+    },
+    {
+      "lemma": "रहना",
+      "lemma_roman": "rahna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to stay/live",
+      "frequency_rank": 15,
+      "semantic_tags": [
+        "state"
+      ]
+    },
+    {
+      "lemma": "कहना",
+      "lemma_roman": "kahna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to say",
+      "frequency_rank": 10,
+      "semantic_tags": [
+        "communication"
+      ]
+    },
+    {
+      "lemma": "बनना",
+      "lemma_roman": "banna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to become/be made",
+      "frequency_rank": 55,
+      "semantic_tags": [
+        "change"
+      ]
+    },
+    {
+      "lemma": "मिलना",
+      "lemma_roman": "milna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to meet/be found",
+      "frequency_rank": 22,
+      "semantic_tags": [
+        "social"
+      ]
+    },
+    {
+      "lemma": "उठना",
+      "lemma_roman": "uthna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to get up/rise",
+      "frequency_rank": 70,
+      "semantic_tags": [
+        "body",
+        "movement"
+      ]
+    },
+    {
+      "lemma": "बैठना",
+      "lemma_roman": "baithna",
+      "verb_class": "regular",
+      "transitivity": "intransitive",
+      "translation": "to sit",
+      "frequency_rank": 75,
+      "semantic_tags": [
+        "body"
+      ]
+    },
+    {
+      "lemma": "खेलना",
+      "lemma_roman": "khelna",
+      "verb_class": "regular",
+      "transitivity": "transitive",
+      "translation": "to play",
+      "frequency_rank": 90,
+      "semantic_tags": [
+        "leisure"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Gradle / Android build outputs
+.gradle/
+build/
+app/build/
+local.properties
+
+# Generated assets are committed (they ARE the shipped taxonomy), but the
+# build cache is not.
+*.iml
+.idea/
+.kotlin/
+
+# OS noise
+.DS_Store
