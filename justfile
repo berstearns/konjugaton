@@ -95,7 +95,7 @@ binary-smoke: build
     ./{{bin}} version
     env -i ./{{bin}} selfcheck
     env -i ./{{bin}} catalog | tail -3
-    env -i ./{{bin}} practice --tam future --script devanagari --no-interactive -n 3 --seed 1
+    env -i ./{{bin}} practice --tense perfekt --no-interactive -n 3 --seed 1
 
 # ─────────────────────────────────────────────────────────────────────────
 # DEPLOY — upload artifacts to the leao remote (ber:), same scheme as app7
@@ -150,7 +150,7 @@ catalog:
 verbs verb_class="":
     {{konjugaton}} verbs {{ if verb_class == "" { "" } else { "--class " + verb_class } }}
 
-# Generic drill — pass any flags:  just drill --tam future --gender f -n 5
+# Generic drill — pass any flags:  just drill --tense praeteritum --register du -n 5
 drill *ARGS:
     {{konjugaton}} practice {{ARGS}}
 
@@ -171,45 +171,45 @@ tui:
     {{konjugaton}} tui
 
 # ─────────────────────────────────────────────────────────────────────────
-# Hyper-combinatorial workflows
+# Combinatorial workflows
 # ─────────────────────────────────────────────────────────────────────────
 
-# One TAM across the space (sample):  just tam perfect
-tam TAM n="6":
-    {{konjugaton}} practice --tam {{TAM}} --no-interactive -n {{n}} --order easy-first
+# One tense-mood across the space (sample):  just tense perfekt
+tense TENSE n="6":
+    {{konjugaton}} practice --tense {{TENSE}} --no-interactive -n {{n}} --order easy-first
 
-# One script across the space:  just script romanized
-script SCRIPT n="6":
-    {{konjugaton}} practice --script {{SCRIPT}} --no-interactive -n {{n}}
+# One register across the space:  just register du
+register REGISTER n="6":
+    {{konjugaton}} practice --register {{REGISTER}} --no-interactive -n {{n}}
 
-# Negation drill — exercises नहीं / मत / न placement
+# Negation drill — exercises nicht placement
 negatives n="8":
     {{konjugaton}} practice --polarity negative --no-interactive -n {{n}}
 
-# Gender-agreement drill — feminine subjects
-feminine n="8":
-    {{konjugaton}} practice --gender f --no-interactive -n {{n}}
+# The werden-passive (transitive verbs)
+passive n="8":
+    {{konjugaton}} practice --voice passiv --no-interactive -n {{n}}
 
-# Honorific drill — the आप register
-honorific-aap n="8":
-    {{konjugaton}} practice --honorific aap --no-interactive -n {{n}}
+# The formal Sie register
+formal n="8":
+    {{konjugaton}} practice --register sie_formal --no-interactive -n {{n}}
 
-# The ने-ergative (transitive perfectives)
-ergative n="8":
-    {{konjugaton}} practice --tam perfect --no-interactive -n {{n}}
+# Strong-verb perfect — the haben/sein auxiliary split
+perfekt n="8":
+    {{konjugaton}} practice --tense perfekt --no-interactive -n {{n}}
 
-# Transliteration drill — Devanagari ⇆ romanized
-translit n="8":
-    {{konjugaton}} practice --knowledge transliteration --no-interactive -n {{n}}
+# Multiple-choice only (no typing)
+mcq n="8":
+    {{konjugaton}} practice --only-mcq --no-interactive -n {{n}}
 
-# SWEEP — sample every (TAM × script) cell: the full combinatorial tour
+# SWEEP — sample every (tense × voice) cell: the full combinatorial tour
 sweep n="2":
     #!/usr/bin/env bash
     set -euo pipefail
-    for t in present-habitual past-habitual present-progressive perfect future subjunctive imperative; do
-      for s in devanagari romanized; do
-        echo "═══ $t · $s ═══"
-        {{konjugaton}} practice --tam "$t" --script "$s" --no-interactive -n {{n}} \
+    for t in praesens praeteritum perfekt plusquamperfekt futur1 konjunktiv2 imperativ; do
+      for v in aktiv passiv; do
+        echo "═══ $t · $v ═══"
+        {{konjugaton}} practice --tense "$t" --voice "$v" --no-interactive -n {{n}} \
           --order easy-first 2>/dev/null | grep -E '^[0-9]+\.|→' \
           || echo "  (no realizable items)"
       done
