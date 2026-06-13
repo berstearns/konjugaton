@@ -1,108 +1,88 @@
 {
   "contexts": [
     {
-      "id": "rozmarra",
-      "label_hi": "रोज़मर्रा",
+      "id": "alltag",
+      "label_de": "Alltag",
       "label_en": "Daily life",
       "templates": [
-        "रोज़ {subject} {verb}।",
-        "सुबह {subject} {verb}।",
-        "घर पर {subject} {verb}।"
-      ],
-      "templates_roman": [
-        "roz {subject} {verb}.",
-        "subah {subject} {verb}.",
-        "ghar par {subject} {verb}."
+        "{subject} {verb} jeden Tag.",
+        "{subject} {verb} morgens.",
+        "{subject} {verb} zu Hause."
       ],
       "affinity": [
-        "बोलना",
-        "देखना",
-        "सुनना",
-        "खाना",
-        "सोना"
+        "machen",
+        "essen",
+        "schlafen",
+        "aufstehen",
+        "sehen"
       ]
     },
     {
-      "id": "safar",
-      "label_hi": "सफ़र",
+      "id": "reise",
+      "label_de": "Reise",
       "label_en": "Travel",
       "templates": [
-        "सफ़र में {subject} {verb}।",
-        "बाहर {subject} {verb}।",
-        "जाने से पहले {subject} {verb}।"
-      ],
-      "templates_roman": [
-        "safar mein {subject} {verb}.",
-        "baahar {subject} {verb}.",
-        "jaane se pahle {subject} {verb}."
+        "{subject} {verb} unterwegs.",
+        "{subject} {verb} im Urlaub.",
+        "{subject} {verb} bald."
       ],
       "affinity": [
-        "जाना",
-        "आना",
-        "चलना",
-        "देखना"
+        "fahren",
+        "gehen",
+        "kommen",
+        "ankommen",
+        "mitkommen"
       ]
     },
     {
-      "id": "kaam",
-      "label_hi": "काम",
+      "id": "arbeit",
+      "label_de": "Arbeit",
       "label_en": "Work",
       "templates": [
-        "दफ़्तर में {subject} {verb}।",
-        "साथियों के साथ {subject} {verb}।",
-        "हर हफ़्ते {subject} {verb}।"
-      ],
-      "templates_roman": [
-        "daftar mein {subject} {verb}.",
-        "saathiyon ke saath {subject} {verb}.",
-        "har hafte {subject} {verb}."
+        "{subject} {verb} im Büro.",
+        "{subject} {verb} jede Woche.",
+        "{subject} {verb} mit Kollegen."
       ],
       "affinity": [
-        "करना",
-        "बोलना",
-        "लिखना",
-        "मिलना"
+        "machen",
+        "sagen",
+        "bringen",
+        "sprechen",
+        "arbeiten"
       ]
     },
     {
-      "id": "padhai",
-      "label_hi": "पढ़ाई",
+      "id": "studium",
+      "label_de": "Studium",
       "label_en": "Studies",
       "templates": [
-        "स्कूल में {subject} {verb}।",
-        "परीक्षा के लिए {subject} {verb}।",
-        "किताब से {subject} {verb}।"
-      ],
-      "templates_roman": [
-        "school mein {subject} {verb}.",
-        "pariksha ke liye {subject} {verb}.",
-        "kitab se {subject} {verb}."
+        "{subject} {verb} in der Schule.",
+        "{subject} {verb} für die Prüfung.",
+        "{subject} {verb} viel."
       ],
       "affinity": [
-        "पढ़ना",
-        "लिखना",
-        "समझना",
-        "देखना"
+        "lernen",
+        "denken",
+        "finden",
+        "sehen",
+        "sprechen"
       ]
     },
     {
-      "id": "bhavnaen",
-      "label_hi": "भावनाएँ",
+      "id": "gefuehle",
+      "label_de": "Gefühle",
       "label_en": "Emotions",
       "templates": [
-        "ख़ुशी से {subject} {verb}।",
-        "सचमुच {subject} {verb}।",
-        "बिना सोचे {subject} {verb}।"
-      ],
-      "templates_roman": [
-        "khushi se {subject} {verb}.",
-        "sachmuch {subject} {verb}.",
-        "bina soche {subject} {verb}."
+        "{subject} {verb} wirklich.",
+        "{subject} {verb} gern.",
+        "{subject} {verb} oft."
       ],
       "affinity": [
-        "कहना",
-        "देखना",
-        "समझना"
+        "sagen",
+        "denken",
+        "sehen",
+        "geben",
+        "spielen"
       ]
     }
   ]

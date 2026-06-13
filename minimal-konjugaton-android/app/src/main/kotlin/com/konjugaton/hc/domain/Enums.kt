@@ -1,47 +1,47 @@
 /*
  * The combinatorial axes of the practice space, as closed enumerations.
  *
- * Direct port of konjugaton's `domain/enums.py`. Each enum carries the same
- * string `value` the Python StrEnum used, so skill keys and serialized state are
- * byte-compatible with the reference implementation. These are plain Kotlin
- * enums — no serialization annotations — keeping the domain framework-free (the
- * data layer maps raw JSON strings onto them, just like pydantic -> domain).
+ * Direct port of konjugaton's `domain/enums.py` (German). Each enum carries the
+ * same string `value` the Python StrEnum used, so skill keys and serialized state
+ * are byte-compatible with the reference implementation. Plain Kotlin enums — the
+ * data layer maps raw JSON strings onto them, just like pydantic -> domain.
  *
- * Hindi is far more combinatorial than French: the verb agrees with gender AND
- * number, the 2nd person fans into three honorific registers (तू/तुम/आप), and
- * there are nine TAMs built from participles + the होना auxiliary.
+ * German splits weak/strong/mixed conjugations (ablaut), the haben/sein auxiliary
+ * in the perfect tenses, separable prefixes, the du/ihr/Sie register, the
+ * Konjunktiv I/II moods and the werden-passive. The verb agrees in person and
+ * number only (no gender).
  */
 package com.konjugaton.hc.domain
 
-/** Tense-Aspect-Mood — the Hindi verb's primary axis. */
-enum class Tam(val value: String) {
-    PRESENT_HABITUAL("present-habitual"),
-    PAST_HABITUAL("past-habitual"),
-    PRESENT_PROGRESSIVE("present-progressive"),
-    PAST_PROGRESSIVE("past-progressive"),
-    PERFECT("perfect"),
-    PAST_PERFECT("past-perfect"),
-    FUTURE("future"),
-    SUBJUNCTIVE("subjunctive"),
-    IMPERATIVE("imperative");
+/** Tense-Mood — the German verb's primary axis (Indikativ + Konjunktiv + Imperativ). */
+enum class TenseMood(val value: String) {
+    PRAESENS("praesens"),
+    PRAETERITUM("praeteritum"),
+    PERFEKT("perfekt"),
+    PLUSQUAMPERFEKT("plusquamperfekt"),
+    FUTUR1("futur1"),
+    FUTUR2("futur2"),
+    KONJUNKTIV1("konjunktiv1"),
+    KONJUNKTIV2("konjunktiv2"),
+    IMPERATIV("imperativ");
 
     companion object {
         fun fromValue(v: String) = entries.first { it.value == v }
     }
 }
 
-/** Grammatical person (1/2/3). Number and honorific are separate axes. */
+/** Grammatical person (1/2/3). Number and register are separate axes. */
 enum class Person(val value: String) {
-    P1("1"), // मैं / हम
-    P2("2"), // तू / तुम / आप
-    P3("3"); // यह/वह / ये/वे
+    P1("1"), // ich / wir
+    P2("2"), // du / ihr / Sie
+    P3("3"); // er,sie,es / sie
 
     companion object {
         fun fromValue(v: String) = entries.first { it.value == v }
     }
 }
 
-/** Grammatical number. Hindi verbs agree in number. */
+/** Grammatical number. The German verb agrees in number (not gender). */
 enum class Number(val value: String) {
     SINGULAR("sg"),
     PLURAL("pl");
@@ -51,32 +51,33 @@ enum class Number(val value: String) {
     }
 }
 
-/** Grammatical gender of the agreeing argument. Hindi verbs agree in gender. */
-enum class Gender(val value: String) {
-    MASCULINE("m"),
-    FEMININE("f");
-
-    companion object {
-        fun fromValue(v: String) = entries.first { it.value == v }
-    }
-}
-
-/** Second-person register (and the 3rd-person formal). Drives the pronoun and,
- *  for future/subjunctive/imperative, the verb ending. */
-enum class Honorific(val value: String) {
+/** Politeness register — selects the 2nd/3rd-person pronoun and, for Sie, the form. */
+enum class Register(val value: String) {
     NEUTRAL("neutral"), // 1st person, and plain 3rd person
-    INTIMATE("tu"), // तू
-    FAMILIAR("tum"), // तुम
-    FORMAL("aap"); // आप
+    DU("du"), // informal singular addressee
+    IHR("ihr"), // informal plural addressee
+    SIE("sie_formal"); // formal addressee; takes the 3rd-plural verb form
 
     companion object {
         fun fromValue(v: String) = entries.first { it.value == v }
     }
 }
 
-/** Conjugation class. REGULAR derives everything; IRREGULAR ships suppletive perfectives. */
+/** Aktiv vs the werden-Passiv (es wird gemacht). Passive ⇒ transitive verbs only. */
+enum class Voice(val value: String) {
+    AKTIV("aktiv"),
+    PASSIV("passiv");
+
+    companion object {
+        fun fromValue(v: String) = entries.first { it.value == v }
+    }
+}
+
+/** Conjugation class: weak (regular), strong (ablaut), mixed, irregular (sein/haben/werden). */
 enum class VerbClass(val value: String) {
-    REGULAR("regular"),
+    WEAK("weak"),
+    STRONG("strong"),
+    MIXED("mixed"),
     IRREGULAR("irregular");
 
     companion object {
@@ -84,36 +85,17 @@ enum class VerbClass(val value: String) {
     }
 }
 
-/** Transitivity governs the ने-ergative in perfective TAMs. */
-enum class Transitivity(val value: String) {
-    TRANSITIVE("transitive"),
-    INTRANSITIVE("intransitive");
+/** The perfect-tense auxiliary a verb selects (a per-verb property). */
+enum class Auxiliary(val value: String) {
+    HABEN("haben"),
+    SEIN("sein");
 
     companion object {
         fun fromValue(v: String) = entries.first { it.value == v }
     }
 }
 
-/**
- * The verbal construction — Hindi's light-verb / voice layer. Port of the Python
- * `Construction` enum. SIMPLE is the bare finite verb; each compound stacks a
- * non-finite form of the main verb under a conjugated light verb (सकना/चुकना/
- * चाहना/लगना) or, for the passive, जाना. Compounds never take the ने-ergative.
- */
-enum class Construction(val value: String) {
-    SIMPLE("simple"),
-    ABILITY("ability"), // सकना: कर सकता है
-    COMPLETIVE("completive"), // चुकना: कर चुका है
-    DESIDERATIVE("desiderative"), // चाहना: करना चाहता है
-    INCEPTIVE("inceptive"), // लगना: करने लगा
-    PASSIVE("passive"); // जाना: किया जाता है
-
-    companion object {
-        fun fromValue(v: String) = entries.first { it.value == v }
-    }
-}
-
-/** Affirmative vs negated clause (नहीं / मत / न, by TAM). */
+/** Affirmative vs negated clause (German negates with the particle `nicht`). */
 enum class Polarity(val value: String) {
     AFFIRMATIVE("affirmative"),
     NEGATIVE("negative");
@@ -123,24 +105,12 @@ enum class Polarity(val value: String) {
     }
 }
 
-/** Which script the answer is elicited in — a transliteration knowledge axis. */
-enum class Script(val value: String) {
-    DEVANAGARI("devanagari"),
-    ROMANIZED("romanized");
-
-    companion object {
-        fun fromValue(v: String) = entries.first { it.value == v }
-    }
-}
-
-/** What *kind* of knowing an item probes. The learner model maps onto this. */
+/** What *kind* of knowing an item probes. German is single-script (no transliteration). */
 enum class KnowledgeType(val value: String) {
     PRODUCTION("production"),
     RECOGNITION("recognition"),
-    TRANSLITERATION("transliteration"),
     MEANING("meaning"),
-    USAGE("usage"),
-    AGREEMENT("agreement");
+    USAGE("usage");
 
     companion object {
         fun fromValue(v: String) = entries.first { it.value == v }
@@ -148,45 +118,37 @@ enum class KnowledgeType(val value: String) {
 }
 
 /**
- * The (person, number, gender, honorific) bundle a Hindi verb agrees with.
- * French collapses person+number into a single 6-way Person; Hindi cannot, so
- * we bundle the four sub-axes into one hashable value object (a `data class`
- * is auto-hashable, safe as a map key — like the Python frozen dataclass).
+ * The (person, number, register) bundle a German verb agrees with. The register
+ * selects the pronoun and, for the formal Sie, the verb form: `Sie machen` uses
+ * the 3rd-plural slot.
  */
 data class Agreement(
     val person: Person,
     val number: Number,
-    val gender: Gender,
-    val honorific: Honorific,
+    val register: Register,
 ) {
-    val key: String get() = "${person.value}|${number.value}|${gender.value}|${honorific.value}"
+    val key: String get() = "${person.value}|${number.value}|${register.value}"
+
+    /** The `person|number` ending slot; the formal Sie uses the 3|pl form. */
+    val slot: String
+        get() = if (register == Register.SIE) {
+            "${Person.P3.value}|${Number.PLURAL.value}"
+        } else {
+            "${person.value}|${number.value}"
+        }
 }
 
 /**
- * Subject pronoun (Devanagari) per (person, number, honorific). For the 2nd
- * person the honorific selects the pronoun; for 1st/3rd it is NEUTRAL and the
- * number selects between singular/plural. This closed map IS the legal-bundle
- * gate — illegal cells (e.g. "1st person आप") simply have no entry.
+ * Subject pronoun per (person, number, register). The register selects the
+ * 2nd/3rd-person pronoun; illegal cells (e.g. "1st-person Sie") have no entry,
+ * so this closed map IS the legal-bundle gate.
  */
-val SUBJECT_PRONOUN: Map<Triple<Person, Number, Honorific>, String> = mapOf(
-    Triple(Person.P1, Number.SINGULAR, Honorific.NEUTRAL) to "मैं",
-    Triple(Person.P1, Number.PLURAL, Honorific.NEUTRAL) to "हम",
-    Triple(Person.P2, Number.SINGULAR, Honorific.INTIMATE) to "तू",
-    Triple(Person.P2, Number.PLURAL, Honorific.FAMILIAR) to "तुम",
-    Triple(Person.P2, Number.PLURAL, Honorific.FORMAL) to "आप",
-    Triple(Person.P3, Number.SINGULAR, Honorific.NEUTRAL) to "यह",
-    Triple(Person.P3, Number.PLURAL, Honorific.NEUTRAL) to "ये",
-    Triple(Person.P3, Number.PLURAL, Honorific.FORMAL) to "आप",
-)
-
-/** Romanized subject pronoun, same keys. */
-val SUBJECT_PRONOUN_ROMAN: Map<Triple<Person, Number, Honorific>, String> = mapOf(
-    Triple(Person.P1, Number.SINGULAR, Honorific.NEUTRAL) to "main",
-    Triple(Person.P1, Number.PLURAL, Honorific.NEUTRAL) to "ham",
-    Triple(Person.P2, Number.SINGULAR, Honorific.INTIMATE) to "tu",
-    Triple(Person.P2, Number.PLURAL, Honorific.FAMILIAR) to "tum",
-    Triple(Person.P2, Number.PLURAL, Honorific.FORMAL) to "aap",
-    Triple(Person.P3, Number.SINGULAR, Honorific.NEUTRAL) to "yah",
-    Triple(Person.P3, Number.PLURAL, Honorific.NEUTRAL) to "ye",
-    Triple(Person.P3, Number.PLURAL, Honorific.FORMAL) to "aap",
+val SUBJECT_PRONOUN: Map<Triple<Person, Number, Register>, String> = mapOf(
+    Triple(Person.P1, Number.SINGULAR, Register.NEUTRAL) to "ich",
+    Triple(Person.P1, Number.PLURAL, Register.NEUTRAL) to "wir",
+    Triple(Person.P2, Number.SINGULAR, Register.DU) to "du",
+    Triple(Person.P2, Number.PLURAL, Register.IHR) to "ihr",
+    Triple(Person.P2, Number.PLURAL, Register.SIE) to "Sie",
+    Triple(Person.P3, Number.SINGULAR, Register.NEUTRAL) to "er",
+    Triple(Person.P3, Number.PLURAL, Register.NEUTRAL) to "sie",
 )

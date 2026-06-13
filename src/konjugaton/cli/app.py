@@ -42,6 +42,7 @@ from konjugaton.domain import (
 from konjugaton.engine import AxisSelection
 from konjugaton.services import (
     CatalogService,
+    ConjugationTableService,
     Grade,
     GradedResponse,
     LearnerLogger,
@@ -314,6 +315,86 @@ def _response_record(
         "ewma_before": round(ewma_before, 4),
         "ewma_after": round(ewma_after, 4),
     }
+
+
+@app.command()
+def table(
+    verb: str = typer.Option("haben", "--verb", "-v", help="Verb lemma to conjugate."),
+    tense_mood: TenseMood = typer.Option(
+        TenseMood.PRAESENS, "--tense-mood", "--tm", help="Tense-mood to drill."
+    ),
+    user: str = typer.Option(default_user(), "--user", "-u", help="Learner profile id."),
+    interactive: bool = typer.Option(True, "--interactive/--no-interactive"),
+    state_opt: Path | None = typer.Option(None, "--state", help="Override state file."),
+    save: bool = typer.Option(True, "--save/--no-save"),
+) -> None:
+    """Fill one verb's full conjugation table in a single tense-mood.
+
+    The focused, single-verb counterpart to `practice`: pick a verb + tense-mood
+    and complete the whole paradigm. Each cell is graded and recorded like a drill
+    item. The Imperativ realizes the three addressees (du/ihr/Sie); finite tenses
+    the six standard pronouns.
+    """
+    settings = load_settings(user)
+    service = ConjugationTableService.default(settings=settings)
+    if verb not in service.catalog.verbs:
+        console.print(f"[red]unknown verb[/] {verb!r}. Try [bold]konjugaton verbs[/].")
+        raise typer.Exit(code=1)
+
+    tbl = service.build_table(verb, tense_mood)
+    console.print(
+        f"\n[bold]{tbl.lemma}[/] [dim]({tbl.translation})[/] · [cyan]{tbl.tense_label}[/]\n"
+    )
+
+    repo = JsonStateRepository(_resolve_state(state_opt, user))
+    state = repo.load()
+    logger = LearnerLogger(settings, user)
+
+    correct = 0
+    for cell in tbl.cells:
+        if not interactive:
+            console.print(f"  [dim]{cell.subject:7}[/] [green]{cell.answer}[/]")
+            continue
+        given = typer.prompt(f"  {cell.subject}")
+        theta_before = state.ability(cell.item.skill)
+        p_correct = irt.probability_correct(theta_before, cell.item.irt)
+        information = irt.information(theta_before, cell.item.irt)
+        ewma_before = state.cell(cell.item.coordinate.lemma, cell.item.coordinate.knowledge).ewma
+        graded = service.grade(cell.item, given)
+        if graded.grade is Grade.CORRECT:
+            console.print("     [bold green]✓ richtig[/]")
+        elif graded.grade is Grade.NEAR:
+            console.print(f"     [green]≈ accepted (edits={graded.distance}) → {cell.answer}[/]")
+        elif graded.grade is Grade.ACCENT_SLIP:
+            console.print(f"     [yellow]≈ diacritics → {cell.answer}[/]")
+        else:
+            console.print(f"     [bold red]✗[/] → [bold]{cell.answer}[/]")
+        correct += int(graded.is_correct)
+        state.record(cell.item, correct=graded.is_correct, timestamp=_now())
+        logger.log_response(
+            _response_record(
+                user,
+                cell.item,
+                graded,
+                p_correct,
+                information,
+                theta_before,
+                state.ability(cell.item.skill),
+                ewma_before,
+                state.cell(cell.item.coordinate.lemma, cell.item.coordinate.knowledge).ewma,
+                cell.item.skill.verb_class.value,
+            )
+        )
+
+    if interactive:
+        console.print(f"\n[bold]Table score: {correct}/{len(tbl.cells)}[/]")
+        if save:
+            repo.save(state)
+            logger.snapshot_state(state)
+            logger.log_session(
+                {"user": user, "items": len(tbl.cells), "correct": correct, "via": "table"}
+            )
+            console.print(f"[dim]State saved → {repo.path}[/]")
 
 
 @app.command()

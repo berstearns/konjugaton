@@ -1,8 +1,8 @@
 /*
  * Build practice sessions and grade responses.
  *
- * Port of konjugaton's `services/practice.py`. Samples the space (reservoir
- * sampling so we never materialize the full 184,920-coordinate product),
+ * Port of konjugaton's `services/practice.py` (German). Samples the space
+ * (reservoir sampling so we never materialize the full coordinate product),
  * generates and orders items, and delegates grading to a [Grader].
  */
 package com.konjugaton.hc.domain
@@ -83,6 +83,30 @@ class PracticeService(
                 }
             SessionOrder.EASY_FIRST -> items.sortedBy { it.irt.difficulty }
         }
+
+    /** Breadth-guided: cover as many distinct skills as possible (round-robin). */
+    fun buildAssessment(selection: AxisSelection, count: Int): List<Item> {
+        val buckets = LinkedHashMap<String, ArrayDeque<Coordinate>>()
+        for (coord in space.iterCoordinates(selection)) {
+            val verbClass = catalog.verb(coord.lemma).verbClass
+            val key = coord.skill(verbClass).key
+            buckets.getOrPut(key) { ArrayDeque() }.addLast(coord)
+        }
+        val keys = buckets.keys.toMutableList()
+        keys.shuffle(rng)
+        var active = keys.map { buckets.getValue(it) }
+        val picked = ArrayList<Coordinate>(count)
+        while (active.isNotEmpty() && picked.size < count) {
+            for (q in active) {
+                if (q.isNotEmpty()) {
+                    picked.add(q.removeFirst())
+                    if (picked.size >= count) break
+                }
+            }
+            active = active.filter { it.isNotEmpty() }
+        }
+        return picked.map { generator.generate(it, rng) }
+    }
 
     // -- grading ------------------------------------------------------------
 

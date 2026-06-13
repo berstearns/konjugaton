@@ -13,7 +13,8 @@ from konjugaton.engine.conjugator import (
     default_agreement,
     supported_tense_moods,
 )
-from konjugaton.engine.generator import ExerciseGenerator
+from konjugaton.engine.generator import ExerciseGenerator, seed_irt
+from konjugaton.engine.paradigm import build_conjugation_table
 from konjugaton.engine.permutations import (
     IMPLEMENTED_KNOWLEDGE,
     AxisSelection,
@@ -27,7 +28,9 @@ __all__ = [
     "Conjugator",
     "ExerciseGenerator",
     "PermutationSpace",
+    "build_conjugation_table",
     "default_agreement",
     "render",
+    "seed_irt",
     "supported_tense_moods",
 ]

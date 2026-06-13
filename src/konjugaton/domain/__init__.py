@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from konjugaton.domain.agreement import Agreement
 from konjugaton.domain.conjugation import ConjugatedForm
+from konjugaton.domain.conjugation_table import ConjugationCell, ConjugationTable
 from konjugaton.domain.context import SemanticContext
 from konjugaton.domain.enums import (
     SUBJECT_PRONOUN,
@@ -31,7 +32,9 @@ __all__ = [
     "Agreement",
     "Auxiliary",
     "ConjugatedForm",
+    "ConjugationCell",
     "ConjugationData",
+    "ConjugationTable",
     "Coordinate",
     "EndingTables",
     "IrtParameters",

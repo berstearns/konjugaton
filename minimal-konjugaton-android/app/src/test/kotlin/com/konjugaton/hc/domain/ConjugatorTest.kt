@@ -8,10 +8,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Locks the conjugation engine to ground truth, loading the *same* JSON assets
- * the app ships. Mirrors konjugaton's `tests/test_conjugator.py` intent: if the
- * taxonomy or a stem rule regresses, this fails on the plain JVM in ms — in both
- * scripts.
+ * Locks the German conjugation engine to ground truth, loading the *same* JSON
+ * assets the app ships. Mirrors konjugaton's `tests/test_conjugator.py` intent:
+ * if the taxonomy or a stem rule regresses, this fails on the plain JVM in ms.
+ *
+ * The engine is the source of truth (a faithful port of the selfcheck-passing
+ * Python); every asserted surface here is a hand-verified German form.
  */
 class ConjugatorTest {
 
@@ -21,152 +23,154 @@ class ConjugatorTest {
     }
     private val conj = Conjugator(catalog.endings, catalog.verbs)
 
-    private fun agr(p: Person, n: Number, g: Gender, h: Honorific) = Agreement(p, n, g, h)
-    private fun dev(lemma: String, tam: Tam, a: Agreement) =
-        conj.conjugate(catalog.verb(lemma), tam, a).surface
-    private fun rom(lemma: String, tam: Tam, a: Agreement) =
-        conj.conjugate(catalog.verb(lemma), tam, a).surfaceRoman
+    // The six standard agreement bundles in textbook order.
+    private val ich = Agreement(Person.P1, Number.SINGULAR, Register.NEUTRAL)
+    private val du = Agreement(Person.P2, Number.SINGULAR, Register.DU)
+    private val er = Agreement(Person.P3, Number.SINGULAR, Register.NEUTRAL)
+    private val wir = Agreement(Person.P1, Number.PLURAL, Register.NEUTRAL)
+    private val ihr = Agreement(Person.P2, Number.PLURAL, Register.IHR)
+    private val sie = Agreement(Person.P3, Number.PLURAL, Register.NEUTRAL)
+    private val sieFormal = Agreement(Person.P2, Number.PLURAL, Register.SIE)
 
-    @Test fun `present habitual = imperfective participle + hona`() {
-        val a = agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        assertEquals("करता हूँ", dev("करना", Tam.PRESENT_HABITUAL, a))
-        assertEquals("karta hun", rom("करना", Tam.PRESENT_HABITUAL, a))
-        val f = agr(Person.P1, Number.SINGULAR, Gender.FEMININE, Honorific.NEUTRAL)
-        assertEquals("करती हूँ", dev("करना", Tam.PRESENT_HABITUAL, f))
+    private fun surface(lemma: String, tm: TenseMood, a: Agreement) =
+        conj.conjugate(catalog.verb(lemma), tm, a).surface
+
+    @Test fun `weak praesens across the six slots`() {
+        assertEquals("mache", surface("machen", TenseMood.PRAESENS, ich))
+        assertEquals("machst", surface("machen", TenseMood.PRAESENS, du))
+        assertEquals("macht", surface("machen", TenseMood.PRAESENS, er))
+        assertEquals("machen", surface("machen", TenseMood.PRAESENS, wir))
+        assertEquals("macht", surface("machen", TenseMood.PRAESENS, ihr))
+        assertEquals("machen", surface("machen", TenseMood.PRAESENS, sie))
     }
 
-    @Test fun `tum feminine uses singular-shaped participle, not nasal plural`() {
-        val a = agr(Person.P2, Number.PLURAL, Gender.FEMININE, Honorific.FAMILIAR)
-        assertEquals("पढ़ती हो", dev("पढ़ना", Tam.PRESENT_HABITUAL, a)) // not पढ़तीं
-        val m = agr(Person.P2, Number.PLURAL, Gender.MASCULINE, Honorific.FAMILIAR)
-        assertEquals("पढ़ते हो", dev("पढ़ना", Tam.PRESENT_HABITUAL, m))
+    @Test fun `sein praesens is suppletive across the six slots`() {
+        assertEquals("bin", surface("sein", TenseMood.PRAESENS, ich))
+        assertEquals("bist", surface("sein", TenseMood.PRAESENS, du))
+        assertEquals("ist", surface("sein", TenseMood.PRAESENS, er))
+        assertEquals("sind", surface("sein", TenseMood.PRAESENS, wir))
+        assertEquals("seid", surface("sein", TenseMood.PRAESENS, ihr))
+        assertEquals("sind", surface("sein", TenseMood.PRAESENS, sie))
     }
 
-    @Test fun `irregular perfectives are suppletive`() {
-        val a = agr(Person.P3, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        assertEquals("किया है", dev("करना", Tam.PERFECT, a))
-        assertEquals("गया है", dev("जाना", Tam.PERFECT, a))
-        assertEquals("दिया है", dev("देना", Tam.PERFECT, a))
-        assertEquals("लिया है", dev("लेना", Tam.PERFECT, a))
-        assertEquals("पिया है", dev("पीना", Tam.PERFECT, a))
-        // regular vowel-final glide perfective
-        assertEquals("खाया है", dev("खाना", Tam.PERFECT, a))
+    @Test fun `epenthetic-e weak verbs insert e before t-st endings`() {
+        assertEquals("arbeitest", surface("arbeiten", TenseMood.PRAESENS, du))
+        assertEquals("arbeitet", surface("arbeiten", TenseMood.PRAESENS, er))
+        assertEquals("arbeitete", surface("arbeiten", TenseMood.PRAETERITUM, ich))
     }
 
-    @Test fun `ne-ergative perfect is invariant for transitive verbs`() {
-        // transitive करना: किया है regardless of subject person/gender/number.
-        val fem1sg = agr(Person.P1, Number.SINGULAR, Gender.FEMININE, Honorific.NEUTRAL)
-        assertEquals("किया है", dev("करना", Tam.PERFECT, fem1sg))
-        // intransitive जाना keeps subject agreement.
-        val fem3sg = agr(Person.P3, Number.SINGULAR, Gender.FEMININE, Honorific.NEUTRAL)
-        assertEquals("गई है", dev("जाना", Tam.PERFECT, fem3sg))
+    @Test fun `weak praeteritum and perfekt`() {
+        assertEquals("machtest", surface("machen", TenseMood.PRAETERITUM, du))
+        assertEquals("hat gemacht", surface("machen", TenseMood.PERFEKT, er))
+        assertEquals("habe gemacht", surface("machen", TenseMood.PERFEKT, ich))
     }
 
-    @Test fun `future has personal ending + gender tail, with vowel glide`() {
-        val m = agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        assertEquals("करूँगा", dev("करना", Tam.FUTURE, m))
-        val f = agr(Person.P1, Number.SINGULAR, Gender.FEMININE, Honorific.NEUTRAL)
-        assertEquals("करूँगी", dev("करना", Tam.FUTURE, f))
-        val third = agr(Person.P3, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        assertEquals("करेगा", dev("करना", Tam.FUTURE, third))
-        // vowel-final stem glides; हो is special-cased.
-        assertEquals("खाएगा", dev("खाना", Tam.FUTURE, third))
-        assertEquals("होगा", dev("होना", Tam.FUTURE, third))
+    @Test fun `strong verbs ablaut and take their selected auxiliary`() {
+        assertEquals("gingen", surface("gehen", TenseMood.PRAETERITUM, wir))
+        assertEquals("bin gegangen", surface("gehen", TenseMood.PERFEKT, ich))
+        assertEquals("siehst", surface("sehen", TenseMood.PRAESENS, du))
+        assertEquals("sieht", surface("sehen", TenseMood.PRAESENS, er))
+        assertEquals("gibt", surface("geben", TenseMood.PRAESENS, er))
+        assertEquals("fährst", surface("fahren", TenseMood.PRAESENS, du))
+        assertEquals("isst", surface("essen", TenseMood.PRAESENS, du))
     }
 
-    @Test fun `imperative agrees with the honorific, with irregular aap forms`() {
-        assertEquals("कर", dev("करना", Tam.IMPERATIVE, agr(Person.P2, Number.SINGULAR, Gender.MASCULINE, Honorific.INTIMATE)))
-        assertEquals("करो", dev("करना", Tam.IMPERATIVE, agr(Person.P2, Number.PLURAL, Gender.MASCULINE, Honorific.FAMILIAR)))
-        assertEquals("कीजिए", dev("करना", Tam.IMPERATIVE, agr(Person.P2, Number.PLURAL, Gender.MASCULINE, Honorific.FORMAL)))
-        assertEquals("बोलिए", dev("बोलना", Tam.IMPERATIVE, agr(Person.P2, Number.PLURAL, Gender.MASCULINE, Honorific.FORMAL)))
+    @Test fun `mixed verbs use the ablaut past stem plus the weak suffix`() {
+        assertEquals("dachte", surface("denken", TenseMood.PRAETERITUM, ich))
+        assertEquals("habe gedacht", surface("denken", TenseMood.PERFEKT, ich))
+        assertEquals("hat gebracht", surface("bringen", TenseMood.PERFEKT, er))
     }
 
-    @Test fun `render applies preverbal negation and ne-ergative`() {
-        assertEquals("नहीं करता हूँ", Render.predicate("करता हूँ", Tam.PRESENT_HABITUAL, Polarity.NEGATIVE))
-        assertEquals("मत करो", Render.predicate("करो", Tam.IMPERATIVE, Polarity.NEGATIVE))
-        val a = agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
+    @Test fun `separable prefix detaches in simple tenses, binds in the PII`() {
+        assertEquals("stehe auf", surface("aufstehen", TenseMood.PRAESENS, ich))
+        assertEquals("bin aufgestanden", surface("aufstehen", TenseMood.PERFEKT, ich))
+        assertEquals("kaufe ein", surface("einkaufen", TenseMood.PRAESENS, ich))
+        assertEquals("habe eingekauft", surface("einkaufen", TenseMood.PERFEKT, ich))
+    }
+
+    @Test fun `irregular auxiliaries are pinned`() {
+        assertEquals("war", surface("sein", TenseMood.PRAETERITUM, ich))
+        assertEquals("bin gewesen", surface("sein", TenseMood.PERFEKT, ich))
+        assertEquals("hatte", surface("haben", TenseMood.PRAETERITUM, ich))
+        assertEquals("wird", surface("werden", TenseMood.PRAESENS, er))
+    }
+
+    @Test fun `futur and konjunktiv periphrases`() {
+        assertEquals("werde machen", surface("machen", TenseMood.FUTUR1, ich))
+        assertEquals("werde gemacht haben", surface("machen", TenseMood.FUTUR2, ich))
+        assertEquals("ginge", surface("gehen", TenseMood.KONJUNKTIV2, ich))
+        assertEquals("würde machen", surface("machen", TenseMood.KONJUNKTIV2, ich))
+        assertEquals("wäre", surface("sein", TenseMood.KONJUNKTIV2, er))
+        assertEquals("hätte", surface("haben", TenseMood.KONJUNKTIV2, er))
+        assertEquals("mache", surface("machen", TenseMood.KONJUNKTIV1, er))
+    }
+
+    @Test fun `imperative agrees with the addressee register`() {
+        fun imp(lemma: String, a: Agreement) =
+            Render.predicate(
+                conj.conjugate(catalog.verb(lemma), TenseMood.IMPERATIV, a),
+                TenseMood.IMPERATIV,
+                Polarity.AFFIRMATIVE,
+                a.register,
+            )
+        assertEquals("mach", imp("machen", du))
+        assertEquals("macht", imp("machen", ihr))
+        assertEquals("machen Sie", imp("machen", sieFormal))
+        assertEquals("gib", imp("geben", du)) // e→i stem change kept
+        assertEquals("sieh", imp("sehen", du))
+        assertEquals("fahr", imp("fahren", du)) // a→ä NOT applied in the imperative
+        assertEquals("arbeite", imp("arbeiten", du)) // epenthetic e
+        assertEquals("steh auf", imp("aufstehen", du)) // separable prefix detaches
+    }
+
+    @Test fun `render applies negation after the finite verb`() {
+        val perf = conj.conjugate(catalog.verb("machen"), TenseMood.PERFEKT, ich)
         assertEquals(
-            "मैंने किया",
-            Render.attachSubject(a, "किया", Tam.PERFECT, Transitivity.TRANSITIVE, Script.DEVANAGARI),
+            "habe nicht gemacht",
+            Render.predicate(perf, TenseMood.PERFEKT, Polarity.NEGATIVE, Register.NEUTRAL),
         )
+        val sep = conj.conjugate(catalog.verb("aufstehen"), TenseMood.PRAESENS, ich)
         assertEquals(
-            "मैं गया",
-            Render.attachSubject(a, "गया", Tam.PERFECT, Transitivity.INTRANSITIVE, Script.DEVANAGARI),
+            "stehe nicht auf",
+            Render.predicate(sep, TenseMood.PRAESENS, Polarity.NEGATIVE, Register.NEUTRAL),
         )
     }
 
-    @Test fun `catalog and space have the expected explosive shape`() {
-        assertEquals(23, catalog.lemmas.size)
-        val space = PermutationSpace(catalog, conj)
-        assertTrue("space should be explosive", space.count() > 100_000)
-        assertEquals(660_120, space.count())
-        // SIMPLE slice must equal the pre-construction baseline exactly.
-        assertEquals(
-            184_920,
-            space.count(AxisSelection(constructions = listOf(Construction.SIMPLE))),
-        )
+    @Test fun `render attaches the subject pronoun verb-second`() {
+        val pres = conj.conjugate(catalog.verb("machen"), TenseMood.PRAESENS, ich)
+        val pred = Render.predicate(pres, TenseMood.PRAESENS, Polarity.AFFIRMATIVE, Register.NEUTRAL)
+        assertEquals("ich mache", Render.attachSubject(ich, pred, TenseMood.PRAESENS))
+        // Imperatives drop the subject.
+        val imp = conj.conjugate(catalog.verb("machen"), TenseMood.IMPERATIV, du)
+        val impPred = Render.predicate(imp, TenseMood.IMPERATIV, Polarity.AFFIRMATIVE, Register.DU)
+        assertEquals("mach", Render.attachSubject(du, impPred, TenseMood.IMPERATIV))
     }
 
-    @Test fun `per-construction counts match the Python engine`() {
-        val space = PermutationSpace(catalog, conj)
-        val expected = mapOf(
-            Construction.SIMPLE to 184_920,
-            Construction.ABILITY to 132_480,
-            Construction.COMPLETIVE to 66_240,
-            Construction.DESIDERATIVE to 88_320,
-            Construction.INCEPTIVE to 88_320,
-            Construction.PASSIVE to 99_840,
-        )
-        for ((c, want) in expected) {
-            assertEquals(c.value, want, space.count(AxisSelection(constructions = listOf(c))))
-        }
-        assertEquals(660_120, expected.values.sum())
+    @Test fun `the werden-passive is realized for transitive verbs`() {
+        fun pass(lemma: String, tm: TenseMood) =
+            conj.conjugateVoice(catalog.verb(lemma), tm, er, Voice.PASSIV).surface
+        assertEquals("wird gemacht", pass("machen", TenseMood.PRAESENS))
+        assertEquals("wurde gemacht", pass("machen", TenseMood.PRAETERITUM))
+        assertEquals("ist gemacht worden", pass("machen", TenseMood.PERFEKT))
+        assertEquals("wird gemacht werden", pass("machen", TenseMood.FUTUR1))
     }
 
-    @Test fun `compound constructions produce the canonical surface forms`() {
-        fun cc(lemma: String, tam: Tam, a: Agreement, c: Construction) =
-            conj.conjugateConstruction(catalog.verb(lemma), tam, a, c).surface
-        val m1 = agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        val f3 = agr(Person.P3, Number.SINGULAR, Gender.FEMININE, Honorific.NEUTRAL)
-        assertEquals("कर सकता हूँ", cc("करना", Tam.PRESENT_HABITUAL, m1, Construction.ABILITY))
-        assertEquals("कर चुका हूँ", cc("करना", Tam.PERFECT, m1, Construction.COMPLETIVE))
-        assertEquals("करना चाहता हूँ", cc("करना", Tam.PRESENT_HABITUAL, m1, Construction.DESIDERATIVE))
-        assertEquals("करने लगा था", cc("करना", Tam.PAST_PERFECT, m1, Construction.INCEPTIVE))
-        assertEquals("की जाती है", cc("करना", Tam.PRESENT_HABITUAL, f3, Construction.PASSIVE))
-        assertEquals("किया गया है", cc("करना", Tam.PERFECT, agr(Person.P3, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL), Construction.PASSIVE))
+    @Test fun `passive is gated to transitive verbs`() {
+        assertFalse(conj.realizableVoice(catalog.verb("gehen"), TenseMood.PRAESENS, Voice.PASSIV))
+        assertTrue(conj.realizableVoice(catalog.verb("machen"), TenseMood.PRAESENS, Voice.PASSIV))
     }
 
-    @Test fun `compounds never take the ne-ergative`() {
-        val a = agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL)
-        val comp = conj.conjugateConstruction(catalog.verb("करना"), Tam.PERFECT, a, Construction.COMPLETIVE)
-        val clause = Render.attachSubject(
-            a, comp.surface, Tam.PERFECT, Transitivity.TRANSITIVE, Script.DEVANAGARI,
-            Construction.COMPLETIVE,
-        )
-        assertTrue("compound must stay nominative: $clause", clause.startsWith("मैं "))
+    @Test fun `the imperative is second-person only`() {
+        assertFalse(conj.realizableAgreement(TenseMood.IMPERATIV, ich))
+        assertTrue(conj.realizableAgreement(TenseMood.IMPERATIV, du))
     }
 
-    @Test fun `construction realizability is gated`() {
-        // passive needs a transitive verb
-        assertFalse(conj.realizableConstruction(catalog.verb("आना"), Tam.PERFECT, Construction.PASSIVE))
-        assertTrue(conj.realizableConstruction(catalog.verb("करना"), Tam.PERFECT, Construction.PASSIVE))
-        // no compound licenses the imperative
-        for (c in Construction.entries) {
-            if (c == Construction.SIMPLE) continue
-            assertFalse(conj.realizableConstruction(catalog.verb("करना"), Tam.IMPERATIVE, c))
-        }
-    }
-
-    @Test fun `illegal agreement bundles are blocked`() {
-        assertFalse(
-            conj.realizableAgreement(
-                Tam.IMPERATIVE, agr(Person.P1, Number.SINGULAR, Gender.MASCULINE, Honorific.NEUTRAL),
-            ),
-        )
-        assertTrue(
-            conj.realizableAgreement(
-                Tam.IMPERATIVE, agr(Person.P2, Number.PLURAL, Gender.MASCULINE, Honorific.FAMILIAR),
-            ),
-        )
+    @Test fun `the catalog ships the expected German verbs`() {
+        assertTrue("expected at least 20 verbs", catalog.lemmas.size >= 20)
+        assertTrue("sein/haben/werden are present", catalog.verbs.keys.containsAll(
+            listOf("sein", "haben", "werden", "machen", "gehen"),
+        ))
+        // Nine tense-moods are realized.
+        assertEquals(9, supportedTenseMoods().size)
     }
 }

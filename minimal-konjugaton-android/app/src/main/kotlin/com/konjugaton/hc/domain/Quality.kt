@@ -1,18 +1,22 @@
 /*
  * The quality gate. Ported from konjugaton's `services/selfcheck.py` and
  * strengthened with the Android determinacy/round-trip discipline: it enforces
- * not just structural well-formedness but *answerability* — a Hindi cloze is
- * genuinely ambiguous without its full task (the verb agrees with gender +
- * number and the honorific changes the ending).
+ * not just structural well-formedness but *answerability* — a German cloze is
+ * genuinely ambiguous without its full task (the finite verb agrees in person +
+ * number, the register selects the form, and voice/polarity change the surface).
  *
  * Invariants, per generated item:
- *   structural   — non-empty answer, prompt has a blank, finite/in-range IRT.
- *   determinacy  — the displayed `task` encodes every answer-determining axis
- *                  (TAM, person, number, gender, polarity), and the lemma shows.
- *   round-trip   — re-conjugating the stated target reproduces `answer` exactly.
+ *   structural   — non-empty answer, prompt has a blank, finite/in-range IRT,
+ *                  the lemma is presented.
+ *   determinacy  — the displayed `task` encodes every answer-determining axis:
+ *                  tense-mood, person+number, register (when not NEUTRAL),
+ *                  voice (when PASSIV) and polarity.
  *   self-grading — the item's OWN answer grades CORRECT (generator ⇔ grader).
  *   recognition  — answer ∈ choices, ≥2 distinct non-empty choices.
- *   transliteration — the answer is in the coordinate's target script.
+ *
+ * The expected determinacy tokens are re-derived from `item.coordinate` via
+ * [Labels] — the same single source of truth the generator uses to build
+ * `Item.task` — so the check stays in lock-step with what the learner sees.
  *
  * Run three ways: an exhaustive unit test (build gate), an on-device self-check
  * action, and a debug assertion before any item is shown.
@@ -42,16 +46,13 @@ class QualityEvaluator(
         }
         if (item.lemmaHint.isBlank()) issues += "lemma not presented"
 
-        // -- determinacy (transliteration drills the script map, not agreement)
-        if (c.knowledge != KnowledgeType.TRANSLITERATION) {
-            for (token in listOf(
-                Labels.tamOf(c.tam),
-                Labels.personOf(c.person),
-                Labels.numberOf(c.number),
-                Labels.genderOf(c.gender),
-            )) {
-                if (token !in item.task) issues += "task missing axis token '$token': '${item.task}'"
-            }
+        // -- determinacy -------------------------------------------------------
+        // Re-derive the answer-determining axis tokens and require each to appear
+        // in the displayed task. Conservative: only the axes that actually shift
+        // the surface are demanded — register only when it leaves NEUTRAL, voice
+        // only for the werden-Passiv (mirrors ExerciseGenerator.task()).
+        for (token in expectedTaskTokens(c)) {
+            if (token !in item.task) issues += "task missing axis token '$token': '${item.task}'"
         }
 
         // -- self-grading ------------------------------------------------------
@@ -61,6 +62,22 @@ class QualityEvaluator(
 
         issues += knowledgeSpecific(item)
         return issues
+    }
+
+    /**
+     * The axis tokens the task must contain to make the cloze single-answer.
+     * Derived from the coordinate via [Labels] — same logic the generator uses.
+     */
+    private fun expectedTaskTokens(c: Coordinate): List<String> {
+        val tokens = mutableListOf(
+            Labels.tenseOf(c.tenseMood),
+            Labels.personOf(c.person),
+            Labels.numberOf(c.number),
+        )
+        if (c.register != Register.NEUTRAL) tokens += Labels.registerOf(c.register)
+        if (c.voice == Voice.PASSIV) tokens += Labels.voiceOf(c.voice)
+        tokens += Labels.polarityOf(c.polarity)
+        return tokens
     }
 
     private fun knowledgeSpecific(item: Item): List<String> {
@@ -75,12 +92,6 @@ class QualityEvaluator(
                 }
                 if (item.choices.any { it.isBlank() }) issues += "blank choice present"
             }
-            KnowledgeType.TRANSLITERATION -> {
-                val isRoman = isRomanized(item.answer)
-                if ((c.script == Script.ROMANIZED) != isRoman) {
-                    issues += "transliteration answer not in target script: '${item.answer}'"
-                }
-            }
             else -> {}
         }
         return issues
@@ -94,12 +105,11 @@ class QualityEvaluator(
     }
 }
 
-/** True if the string contains no Devanagari (so it's the roman script). */
-private fun isRomanized(text: String): Boolean = text.none { it in 'ऀ'..'ॿ' }
-
 /** Outcome of an exhaustive self-check run. */
 data class SelfCheckReport(
     val verbs: Int,
+    // Number of distinct tense-moods touched. Named `tams` for API continuity
+    // with the report screen and tests that read `report.tams`.
     val tams: Int,
     val coordinatesChecked: Int,
     val failures: List<String>,
@@ -125,10 +135,10 @@ class SelfCheck(
 
         for (coord in space.iterCoordinates(selection)) {
             checked++
-            tams += coord.tam.value
-            val where = "${coord.lemma}/${coord.tam.value}/${coord.person.value}" +
-                "${coord.number.value}/${coord.gender.value}/${coord.honorific.value}/" +
-                "${coord.polarity.value}/${coord.script.value}/${coord.knowledge.value}"
+            tams += coord.tenseMood.value
+            val where = "${coord.lemma}/${coord.tenseMood.value}/${coord.person.value}" +
+                "${coord.number.value}/${coord.register.value}/${coord.voice.value}/" +
+                "${coord.polarity.value}/${coord.knowledge.value}"
             val item = try {
                 generator.generate(coord, rng)
             } catch (e: Exception) {

@@ -2,101 +2,100 @@
  * The domain value objects: verbs, conjugated forms, coordinates/skills, items.
  *
  * Ports of konjugaton's `domain/verb.py`, `conjugation.py`, `taxonomy.py`,
- * `item.py`, `tables.py`. All immutable `data class`es (cheap to hash, safe as
- * map keys), exactly as the Python frozen dataclasses were. Every surface form
- * carries a Devanagari and a romanized twin.
+ * `item.py`, `tables.py` (German). All immutable `data class`es (cheap to hash,
+ * safe as map keys), exactly as the Python frozen dataclasses were.
  */
 package com.konjugaton.hc.domain
 
-/** Explicit, hand-verified perfective participles for an irregular verb. */
-data class PerfectiveForms(
-    val forms: Map<String, String>, // "sg|m" -> "किया"
-    val formsRoman: Map<String, String>, // "sg|m" -> "kiya"
-)
-
-/** Stems/overrides that drive the [Conjugator]. Regular verbs need none. */
+/**
+ * Stems/overrides that drive the [Conjugator]. Weak verbs need none of it.
+ *
+ * - [praesensStem23] — strong Präsens 2sg/3sg stem change (geben→gib, sehen→sieh).
+ * - [praeteritumStem] — strong (ging, sah) or mixed (dach, brach) past stem.
+ * - [partizip2] — Partizip II (strong/mixed/irregular); weak is derived (ge+stem+t).
+ *   For separable verbs this is the *base* PII (gestanden); the prefix is prepended.
+ * - [konjunktiv2Stem] — strong/irregular K2 stem (ging→ginge, käm→käme, wär→wäre).
+ * - [irregular] — paradigm → slot → form maps for sein/haben/werden.
+ */
 data class ConjugationData(
-    val root: String? = null,
-    val rootRoman: String? = null,
-    val perfective: PerfectiveForms? = null,
-    val futureOblique: String? = null,
-    val futureObliqueRoman: String? = null,
-    val imperativeAap: String? = null,
-    val imperativeAapRoman: String? = null,
+    val praesensStem23: String? = null,
+    val praeteritumStem: String? = null,
+    val partizip2: String? = null,
+    val konjunktiv2Stem: String? = null,
+    val irregular: Map<String, Map<String, String>> = emptyMap(),
 )
 
 /** A verb lemma plus the metadata the engine and taxonomy need. */
 data class Verb(
-    val lemma: String, // Devanagari infinitive, e.g. करना
-    val lemmaRoman: String, // romanized infinitive, e.g. karna
-    val verbClass: VerbClass,
-    val transitivity: Transitivity,
+    val lemma: String, // infinitive, e.g. machen / aufstehen
     val translation: String,
+    val verbClass: VerbClass,
+    val auxiliary: Auxiliary,
+    val transitive: Boolean,
     val frequencyRank: Int,
     val conjugation: ConjugationData = ConjugationData(),
+    val separablePrefix: String? = null,
     val family: String? = null,
     val semanticTags: List<String> = emptyList(),
 ) {
-    /** Devanagari verb root (lemma minus the ना infinitive marker). */
-    val root: String
-        get() = conjugation.root ?: if (lemma.endsWith("ना")) lemma.dropLast(2) else lemma
+    /** The lemma with any separable prefix removed (aufstehen → stehen). */
+    val baseLemma: String
+        get() {
+            val p = separablePrefix
+            return if (p != null && lemma.startsWith(p)) lemma.substring(p.length) else lemma
+        }
 
-    /** Romanized verb root (lemma_roman minus the -na infinitive marker). */
-    val rootRoman: String
-        get() = conjugation.rootRoman
-            ?: if (lemmaRoman.endsWith("na")) lemmaRoman.dropLast(2) else lemmaRoman
+    /** The conjugation stem: base lemma minus the -en / -n infinitive marker. */
+    val stem: String
+        get() {
+            val b = baseLemma
+            return when {
+                b.endsWith("en") -> b.dropLast(2)
+                b.endsWith("n") -> b.dropLast(1)
+                else -> b
+            }
+        }
 }
 
 /**
- * A single conjugated Hindi verb form, in both scripts. Periphrastic TAMs keep
- * the main participle and the होना auxiliary separate, because Hindi negation is
- * preverbal and may drop the present auxiliary — impossible on a pre-joined string.
+ * A conjugated German verb complex: a finite head + a clause-final tail of
+ * non-finite material (Partizip II, Infinitiv, a detached separable prefix, or a
+ * stack). Keeping the two parts separate lets the renderer place `nicht` between
+ * them and assemble the right word order.
  */
 data class ConjugatedForm(
-    val main: String,
-    val mainRoman: String,
-    val auxiliary: String? = null,
-    val auxiliaryRoman: String? = null,
+    val finite: String,
+    val tail: String = "",
 ) {
-    val surface: String get() = if (auxiliary != null) "$main $auxiliary" else main
-    val surfaceRoman: String
-        get() = if (auxiliaryRoman != null) "$mainRoman $auxiliaryRoman" else mainRoman
-    val hasAuxiliary: Boolean get() = auxiliary != null
+    /** The contiguous verb complex (finite + tail), e.g. "habe gemacht", "stehe auf". */
+    val surface: String get() = if (tail.isNotEmpty()) "$finite $tail" else finite
+    val hasTail: Boolean get() = tail.isNotEmpty()
 
     companion object {
-        fun simple(main: String, mainRoman: String) = ConjugatedForm(main, mainRoman)
-        fun periphrastic(main: String, mainRoman: String, aux: String, auxRoman: String) =
-            ConjugatedForm(main, mainRoman, aux, auxRoman)
+        fun simple(finite: String) = ConjugatedForm(finite)
+        fun periphrastic(finite: String, tail: String) = ConjugatedForm(finite, tail)
     }
 }
 
-/** A semantic context — the "where does this verb live" axis (verb-final SOV). */
+/** A semantic context — the "where does this verb live" axis. */
 data class SemanticContext(
     val id: String,
-    val labelHi: String,
+    val labelDe: String,
     val labelEn: String,
     val templates: List<String>,
-    val templatesRoman: List<String>,
     val affinity: List<String> = emptyList(),
 )
 
 /**
- * Conjugation ending tables: paradigm -> key -> suffix, with a romanized twin.
- * A conjugated regular form = stem + ending(paradigm, key).
+ * Conjugation ending tables: paradigm -> slot -> suffix. A conjugated regular
+ * form = stem + ending(paradigm, slot). German is single-script (no roman twin).
  */
-class EndingTables(
-    val tables: Map<String, Map<String, String>>,
-    private val tablesRoman: Map<String, Map<String, String>>,
-) {
+class EndingTables(val tables: Map<String, Map<String, String>>) {
     fun has(paradigm: String): Boolean = paradigm in tables
 
-    fun ending(paradigm: String, key: String): String =
-        tables[paradigm]?.get(key)
-            ?: throw ConjugationError("no ending for $paradigm/$key")
-
-    fun endingRoman(paradigm: String, key: String): String =
-        tablesRoman[paradigm]?.get(key)
-            ?: throw ConjugationError("no roman ending for $paradigm/$key")
+    fun ending(paradigm: String, slot: String): String =
+        tables[paradigm]?.get(slot)
+            ?: throw ConjugationError("no ending for $paradigm/$slot")
 }
 
 /** 3PL item parameters: difficulty (b), discrimination (a), guessing (c). */
@@ -109,46 +108,44 @@ data class IrtParameters(
 /** One fully-specified point in the combinatorial exercise space. */
 data class Coordinate(
     val lemma: String,
-    val tam: Tam,
+    val tenseMood: TenseMood,
     val person: Person,
     val number: Number,
-    val gender: Gender,
-    val honorific: Honorific,
+    val register: Register,
     val polarity: Polarity,
-    val script: Script,
     val knowledge: KnowledgeType,
     val context: String,
-    // The light-verb / passive layer. Defaults to SIMPLE so pre-construction
-    // coordinates stay valid; like polarity/script it modulates difficulty, not skill.
-    val construction: Construction = Construction.SIMPLE,
+    // The voice layer. Defaults to AKTIV so pre-voice coordinates stay valid;
+    // like polarity it modulates difficulty, not skill.
+    val voice: Voice = Voice.AKTIV,
 ) {
     /**
-     * Project onto the coarse IRT skill. Agreement features, polarity, script,
-     * context and the specific lemma are abstracted away — they modulate item
-     * difficulty (a `b` shift) rather than defining a new latent ability.
+     * Project onto the coarse IRT skill. Register, voice, polarity, context and
+     * the specific lemma are abstracted away — they modulate item difficulty (a
+     * `b` shift) rather than defining a new latent ability.
      */
-    fun skill(verbClass: VerbClass) = Skill(verbClass, tam, knowledge)
+    fun skill(verbClass: VerbClass) = Skill(verbClass, tenseMood, knowledge)
 
-    /** The (person, number, gender, honorific) bundle this coordinate fixes. */
-    fun agreement() = Agreement(person, number, gender, honorific)
+    /** The (person, number, register) bundle this coordinate fixes. */
+    fun agreement() = Agreement(person, number, register)
 }
 
-/** A latent ability dimension: (verb_class, tam, knowledge). */
+/** A latent ability dimension: (verb_class, tense_mood, knowledge). */
 data class Skill(
     val verbClass: VerbClass,
-    val tam: Tam,
+    val tenseMood: TenseMood,
     val knowledge: KnowledgeType,
 ) {
     /** Stable string key for persistence and graph node ids. */
-    val key: String get() = "${verbClass.value}|${tam.value}|${knowledge.value}"
+    val key: String get() = "${verbClass.value}|${tenseMood.value}|${knowledge.value}"
 
-    override fun toString(): String = "${verbClass.value} ${tam.value} [${knowledge.value}]"
+    override fun toString(): String = "${verbClass.value} ${tenseMood.value} [${knowledge.value}]"
 }
 
 /**
  * A renderable, gradable exercise instance. [prompt] is shown to the learner;
- * [answer] is the canonical correct response (in the coordinate's script);
- * [task] is the grammatical target that makes the cloze answerable.
+ * [answer] is the canonical correct response; [task] is the grammatical target
+ * that makes the cloze answerable.
  */
 data class Item(
     val coordinate: Coordinate,

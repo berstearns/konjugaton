@@ -7,49 +7,48 @@ class GradingTest {
 
     private fun item(answer: String): Item {
         val coord = Coordinate(
-            lemma = "करना",
-            tam = Tam.PRESENT_HABITUAL,
+            lemma = "machen",
+            tenseMood = TenseMood.PRAESENS,
             person = Person.P1,
             number = Number.SINGULAR,
-            gender = Gender.MASCULINE,
-            honorific = Honorific.NEUTRAL,
+            register = Register.NEUTRAL,
             polarity = Polarity.AFFIRMATIVE,
-            script = Script.ROMANIZED,
             knowledge = KnowledgeType.PRODUCTION,
-            context = "rozmarra",
+            context = "alltag",
+            voice = Voice.AKTIV,
         )
-        return Item(coord, coord.skill(VerbClass.IRREGULAR), "prompt", answer, IrtParameters(0.0))
+        return Item(coord, coord.skill(VerbClass.WEAK), "prompt", answer, IrtParameters(0.0))
     }
 
     @Test fun `levenshtein basics`() {
-        assertEquals(0, levenshtein("karta", "karta"))
-        assertEquals(1, levenshtein("karta", "karti"))
+        assertEquals(0, levenshtein("mache", "mache"))
+        assertEquals(1, levenshtein("mache", "macht")) // e→t, one substitution
         assertEquals(3, levenshtein("kitten", "sitting"))
     }
 
     @Test fun `exact match is correct, case-insensitively`() {
         val g = Grader()
-        assertEquals(Grade.CORRECT, g.grade(item("karta hun"), "karta hun").grade)
-        assertEquals(Grade.CORRECT, g.grade(item("karta hun"), "  KARTA HUN ").grade)
+        assertEquals(Grade.CORRECT, g.grade(item("habe gemacht"), "habe gemacht").grade)
+        assertEquals(Grade.CORRECT, g.grade(item("habe gemacht"), "  HABE GEMACHT ").grade)
     }
 
-    @Test fun `devanagari exact match`() {
+    @Test fun `umlaut answers match exactly`() {
         val g = Grader()
-        assertEquals(Grade.CORRECT, g.grade(item("करता हूँ"), "करता हूँ").grade)
+        assertEquals(Grade.CORRECT, g.grade(item("fährst"), "fährst").grade)
     }
 
-    @Test fun `romanization variants are folded under ignoreAccents`() {
+    @Test fun `umlaut variants are folded under ignoreAccents`() {
         val g = Grader(GradingSettings(ignoreAccents = true))
-        assertEquals(Grade.CORRECT, g.grade(item("karta hun"), "kaarta hun").grade) // aa→a
-        assertEquals(Grade.CORRECT, g.grade(item("kijiye"), "keejiye").grade) // ee→i
+        assertEquals(Grade.CORRECT, g.grade(item("fährst"), "fahrst").grade) // ä→a
+        assertEquals(Grade.CORRECT, g.grade(item("würde machen"), "wurde machen").grade) // ü→u
     }
 
     @Test fun `nonsense is incorrect`() {
-        assertEquals(Grade.INCORRECT, Grader().grade(item("karta hun"), "xyzzy").grade)
+        assertEquals(Grade.INCORRECT, Grader().grade(item("habe gemacht"), "xyzzy").grade)
     }
 
     @Test fun `similarity tolerance accepts a near miss`() {
         val g = Grader(GradingSettings(similarityTolerance = 5))
-        assertEquals(Grade.NEAR, g.grade(item("karta hun"), "karta hn").grade)
+        assertEquals(Grade.NEAR, g.grade(item("habe gemacht"), "habe gemcht").grade)
     }
 }

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "bash",
+    "-c",
+    "cd minimal-konjugaton-android && ./gradlew :app:assembleRelease"
+  ],
+  "start": "2026-06-13T14:55:56.370486",
+  "end": "2026-06-13T14:56:06.415757",
+  "elapsed_s": 10.0,
+  "total_ram_gb": 46.771,
+  "baseline_gb": 23.997,
+  "peak_gb": 24.367,
+  "delta_gb": 0.37,
+  "final_gb": 24.051,
+  "exit_code": 0,
+  "sample_count": 22,
+  "poll_interval_s": 0.5
+}

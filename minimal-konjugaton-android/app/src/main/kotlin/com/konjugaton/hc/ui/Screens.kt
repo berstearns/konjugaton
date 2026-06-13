@@ -41,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -57,6 +58,8 @@ fun App(vm: AppState) {
         Screen.DRILL -> DrillScreen(vm)
         Screen.REPORT -> ReportScreen(vm)
         Screen.SETTINGS -> SettingsScreen(vm)
+        Screen.CONJ_SETUP -> ConjSetupScreen(vm)
+        Screen.CONJ_TABLE -> ConjTableScreen(vm)
     }
 }
 
@@ -71,7 +74,7 @@ private fun HomeScreen(vm: AppState) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(24.dp))
-            Text("Hindi verb drilling", style = MaterialTheme.typography.headlineSmall)
+            Text("German verb drilling", style = MaterialTheme.typography.headlineSmall)
             Text(
                 "${vm.verbCount} verbs · ${"%,d".format(vm.spaceSize)} exercises in the space",
                 style = MaterialTheme.typography.bodyMedium,
@@ -85,15 +88,159 @@ private fun HomeScreen(vm: AppState) {
             }
             Spacer(Modifier.height(24.dp))
             Button(onClick = { vm.startPractice() }, Modifier.fillMaxWidth()) {
-                Text("Practice ${vm.settings.sessionLength}")
+                Text("Üben (${vm.settings.sessionLength})")
+            }
+            OutlinedButton(onClick = { vm.openConjTable() }, Modifier.fillMaxWidth()) {
+                Text("Konjugationstabelle")
             }
             OutlinedButton(onClick = { vm.goReport() }, Modifier.fillMaxWidth()) {
                 Text("Where am I weak?")
             }
             OutlinedButton(onClick = { vm.goSettings() }, Modifier.fillMaxWidth()) {
-                Text("Settings")
+                Text("Einstellungen")
             }
         }
+    }
+}
+
+// --- Conjugation table: setup (pick verb → pick tense-mood) ----------------
+
+@Composable
+private fun ConjSetupScreen(vm: AppState) {
+    val lemma = vm.conjLemma
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text(if (lemma == null) "Verb wählen" else "$lemma · Zeit wählen") })
+        },
+    ) { pad ->
+        Column(
+            Modifier.fillMaxSize().padding(pad).padding(20.dp).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (lemma == null) {
+                Text(
+                    "Fülle eine ganze Konjugationstabelle für ein Verb aus.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                vm.conjVerbs.forEach { v ->
+                    OutlinedButton(
+                        onClick = { vm.pickConjVerb(v.lemma) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("${v.lemma}  —  ${v.translation}  (${v.verbClass.value})") }
+                }
+                Spacer(Modifier.height(4.dp))
+                TextButton(onClick = { vm.goHome() }) { Text("Zurück zum Menü") }
+            } else {
+                vm.availableTenseMoods(lemma).forEach { tm ->
+                    Button(
+                        onClick = { vm.startConjTable(lemma, tm) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text(com.konjugaton.hc.domain.Labels.tenseOf(tm)) }
+                }
+                Spacer(Modifier.height(4.dp))
+                TextButton(onClick = { vm.clearConjVerb() }) { Text("← Zurück zu den Verben") }
+            }
+        }
+    }
+}
+
+// --- Conjugation table: fill it in -----------------------------------------
+
+@Composable
+private fun ConjTableScreen(vm: AppState) {
+    val table = vm.conjTable ?: return
+    val done = vm.conjDone
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Column {
+                        Text("${table.lemma} · ${table.tenseLabel}")
+                        Text(
+                            "✓ ${vm.conjCorrect} / ${table.cells.size}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                },
+            )
+        },
+    ) { pad ->
+        Column(
+            Modifier.fillMaxSize().padding(pad).padding(24.dp).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                "${table.lemma} (${table.translation}) · ${table.tenseLabel}",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Card(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    table.cells.forEachIndexed { i, cell ->
+                        ConjRow(cell.subject, cell.answer, vm.conjOutcomes.getOrNull(i), i == vm.conjIndex)
+                    }
+                }
+            }
+
+            if (!done) {
+                val cell = table.cells[vm.conjIndex]
+                OutlinedTextField(
+                    value = vm.conjAnswer,
+                    onValueChange = { vm.conjAnswer = it },
+                    label = { Text("${cell.subject} …") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = { vm.submitConjCell(vm.conjAnswer) },
+                        enabled = vm.conjAnswer.isNotBlank(),
+                        modifier = Modifier.weight(1f),
+                    ) { Text("Prüfen") }
+                    OutlinedButton(
+                        onClick = { vm.revealConjCell() },
+                        modifier = Modifier.weight(1f),
+                    ) { Text("Zeigen") }
+                }
+            } else {
+                Text(
+                    "Tabelle fertig — ${vm.conjCorrect} / ${table.cells.size}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                )
+            }
+            TextButton(onClick = { vm.goHome() }) { Text("Zurück zum Menü") }
+        }
+    }
+}
+
+/** One table row: subject + (filled verdict / current blank / pending dots). */
+@Composable
+private fun ConjRow(subject: String, answer: String, outcome: CellOutcome?, isCurrent: Boolean) {
+    val (symbol, shown, color) = when (outcome) {
+        CellOutcome.CORRECT -> Triple("✓", answer, MaterialTheme.colorScheme.primary)
+        CellOutcome.NEAR -> Triple("≈", answer, MaterialTheme.colorScheme.primary)
+        CellOutcome.ACCENT -> Triple("≈", answer, MaterialTheme.colorScheme.tertiary)
+        CellOutcome.INCORRECT -> Triple("✗", answer, MaterialTheme.colorScheme.error)
+        CellOutcome.REVEALED -> Triple("•", answer, MaterialTheme.colorScheme.outline)
+        null -> if (isCurrent) {
+            Triple("→", "_____", MaterialTheme.colorScheme.onSurface)
+        } else {
+            Triple(" ", "·····", MaterialTheme.colorScheme.outline)
+        }
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            subject,
+            style = MaterialTheme.typography.bodyLarge,
+            fontFamily = FontFamily.Monospace,
+            modifier = Modifier.width(72.dp),
+        )
+        Text(
+            "$symbol $shown",
+            style = MaterialTheme.typography.bodyLarge,
+            color = color,
+            fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
+        )
     }
 }
 
@@ -179,10 +326,10 @@ private fun DrillScreen(vm: AppState) {
 @Composable
 private fun FeedbackCard(grade: Grade, answer: String, fullSentence: String, s: AppSettings) {
     val (verdict, color) = when (grade) {
-        Grade.CORRECT -> "सही (correct)" to MaterialTheme.colorScheme.primary
-        Grade.NEAR -> "Almost (accepted)" to MaterialTheme.colorScheme.primary
-        Grade.ACCENT_SLIP -> "Right word, check the diacritics" to MaterialTheme.colorScheme.tertiary
-        Grade.INCORRECT -> "Not quite" to MaterialTheme.colorScheme.error
+        Grade.CORRECT -> "Richtig" to MaterialTheme.colorScheme.primary
+        Grade.NEAR -> "Fast (akzeptiert)" to MaterialTheme.colorScheme.primary
+        Grade.ACCENT_SLIP -> "Richtige Form, achte auf die Umlaute" to MaterialTheme.colorScheme.tertiary
+        Grade.INCORRECT -> "Nicht ganz" to MaterialTheme.colorScheme.error
     }
     val wrong = grade == Grade.INCORRECT
     Card(Modifier.fillMaxWidth()) {
@@ -262,25 +409,19 @@ private fun SettingsScreen(vm: AppState) {
 
             Section("Question filter")
             ChoiceRow(
-                "Answer script",
-                s.answerScript,
-                listOf("both", "devanagari", "romanized"),
-            ) { set { copy(answerScript = it) } }
-            ChoiceRow(
                 "Question types",
-                s.questionMode,
-                listOf("all", "multiple-choice", "typed", "transliterate"),
-            ) { set { copy(questionMode = it) } }
+                s.questionType,
+                listOf("both", "mcq", "written"),
+            ) { set { copy(questionType = it) } }
 
             Section("Answer acceptance")
             SwitchRow("Ignore case", null, s.ignoreCase) { set { copy(ignoreCase = it) } }
-            SwitchRow("Ignore accents", "fold romanization variants (aa=a, ee=i…)", s.ignoreAccents) { set { copy(ignoreAccents = it) } }
+            SwitchRow("Ignore umlauts", "treat ä=a, ö=o, ü=u, ß=s when grading", s.ignoreAccents) { set { copy(ignoreAccents = it) } }
             SwitchRow("Ignore punctuation", null, s.ignorePunctuation) { set { copy(ignorePunctuation = it) } }
             StepperRow("Similarity tolerance", s.similarityTolerance, 0, 10, 1, "/10") {
                 set { copy(similarityTolerance = it) }
             }
             SwitchRow("Require subject pronoun", null, s.requireSubjectPronoun, planned = true) { set { copy(requireSubjectPronoun = it) } }
-            SwitchRow("Accept either script", "Devanagari ⇆ romanized", s.acceptEitherScript, planned = true) { set { copy(acceptEitherScript = it) } }
             SwitchRow("Partial credit (periphrastic)", null, s.partialCreditPeriphrastic, planned = true) { set { copy(partialCreditPeriphrastic = it) } }
             SwitchRow("First-attempt typo grace", null, s.firstAttemptTypoGrace, planned = true) { set { copy(firstAttemptTypoGrace = it) } }
 
@@ -290,7 +431,6 @@ private fun SettingsScreen(vm: AppState) {
             SwitchRow("Show translation", null, s.showTranslation) { set { copy(showTranslation = it) } }
             SwitchRow("Show item difficulty", "surfaces the IRT b parameter", s.showItemDifficulty) { set { copy(showItemDifficulty = it) } }
             SwitchRow("Char-diff on error", null, s.charDiffOnError, planned = true) { set { copy(charDiffOnError = it) } }
-            SwitchRow("Literal English gloss", null, s.showLiteralGloss, planned = true) { set { copy(showLiteralGloss = it) } }
             SwitchRow("Grammar hint on error", null, s.grammarHintOnError, planned = true) { set { copy(grammarHintOnError = it) } }
 
             Section("Item construction")
@@ -298,9 +438,7 @@ private fun SettingsScreen(vm: AppState) {
             SwitchRow("Ramp difficulty with streak", null, s.rampWithStreak, planned = true) { set { copy(rampWithStreak = it) } }
 
             Section("Scaffolding (planned)")
-            SwitchRow("Pollinate on error", "i+1 micro-step chain to the answer", s.pollinateOnError, planned = true) { set { copy(pollinateOnError = it) } }
             SwitchRow("Conjugation table on miss", null, s.showConjugationTableOnMiss, planned = true) { set { copy(showConjugationTableOnMiss = it) } }
-            SwitchRow("Track grammar tags", null, s.trackGrammarTags, planned = true) { set { copy(trackGrammarTags = it) } }
 
             Section("Motivation (planned)")
             SwitchRow("Streaks", null, s.streaks, planned = true) { set { copy(streaks = it) } }

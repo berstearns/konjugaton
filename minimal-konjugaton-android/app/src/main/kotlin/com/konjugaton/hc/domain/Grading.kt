@@ -2,12 +2,13 @@
  * Text utilities + configurable grading.
  *
  * Ports konjugaton's `textutils.py` (Levenshtein, accent stripping) and
- * `services/grading.py`. Pipeline: normalise (case -> transliteration ->
+ * `services/grading.py` (German). Pipeline: normalise (case -> transliteration ->
  * punctuation -> whitespace), then match in order of strictness:
  *
  *     exact -> NEAR (length-scaled similarity) -> ACCENT_SLIP (soft) -> INCORRECT
  *
- * The transliteration fold collapses romanization variants (aa→a, ee→i, …).
+ * The transliteration fold collapses umlauts (ä→a, ö→o, ü→u, ß→s) when the
+ * forgiving grader is enabled.
  */
 package com.konjugaton.hc.domain
 
@@ -33,7 +34,7 @@ fun levenshtein(a: String, b: String): Int {
     return previous[b.length]
 }
 
-/** Drop combining marks. Normalises optional Devanagari marks and roman diacritics. */
+/** Drop combining marks (ä→a, ö→o, ü→u). Used for the 'accent slip' soft signal. */
 fun stripAccents(text: String): String =
     Normalizer.normalize(text, Normalizer.Form.NFKD).filter { !it.isCombiningMark() }
 
@@ -54,7 +55,7 @@ fun buildReplacements(mapping: Map<String, List<String>>): List<Pair<String, Str
     }
     return replacements.entries
         .map { it.key to it.value }
-        .sortedByDescending { it.first.length } // longest match first (aa before a)
+        .sortedByDescending { it.first.length }
 }
 
 /** Apply compiled replacements left-to-right, longest match first. */
@@ -82,17 +83,12 @@ fun transliterate(text: String, replacements: List<Pair<String, String>>): Strin
 
 // -- grading settings -------------------------------------------------------
 
-/** Default Hindi romanization-tolerance map (aa→a, ee→i, oo→u, v→w, …). */
+/** German umlaut-tolerance map (ä→a, ö→o, ü→u, ß→s) for the forgiving grader. */
 val DEFAULT_TRANSLITERATION: Map<String, List<String>> = mapOf(
-    "a" to listOf("a", "aa"),
-    "i" to listOf("i", "ee", "ii"),
-    "u" to listOf("u", "oo", "uu"),
-    "n" to listOf("n", "ñ", "ṅ", "ṇ"),
-    "t" to listOf("t", "ṭ"),
-    "d" to listOf("d", "ḍ"),
-    "r" to listOf("r", "ṛ"),
-    "sh" to listOf("sh", "ś", "ṣ"),
-    "w" to listOf("w", "v"),
+    "a" to listOf("a", "ä"),
+    "o" to listOf("o", "ö"),
+    "u" to listOf("u", "ü"),
+    "s" to listOf("s", "ß"),
 )
 
 /** Mirrors the *active* defaults of konjugaton's `GradingSettings`. */
@@ -119,8 +115,8 @@ data class GradedResponse(
     val isCorrect: Boolean get() = grade != Grade.INCORRECT
 }
 
-// Sentence punctuation stripped when ignorePunctuation is on (incl. Devanagari danda).
-private val TRIM_PUNCT: Set<Char> = ".,;:!?…\"()[]।॥".toSet()
+// Sentence punctuation stripped when ignorePunctuation is on.
+private val TRIM_PUNCT: Set<Char> = ".,;:!?…\"()[]".toSet()
 
 /** Grades a response against an item per the user's grading settings. */
 class Grader(private val s: GradingSettings = GradingSettings()) {

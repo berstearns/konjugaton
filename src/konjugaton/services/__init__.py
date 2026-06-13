@@ -13,11 +13,13 @@ from konjugaton.services.output import LearnerLogger, build_response_record
 from konjugaton.services.practice import PracticeService, SessionOrder
 from konjugaton.services.selection import selection_from_settings
 from konjugaton.services.selfcheck import SelfCheckReport, run_selfcheck
+from konjugaton.services.table_service import ConjugationTableService
 from konjugaton.services.textdiff import char_diff, mistake_markup
 
 __all__ = [
     "AxisInfo",
     "CatalogService",
+    "ConjugationTableService",
     "Grade",
     "GradedResponse",
     "Grader",

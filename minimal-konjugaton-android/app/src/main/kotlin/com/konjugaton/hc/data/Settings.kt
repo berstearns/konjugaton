@@ -1,6 +1,6 @@
 /*
- * App settings — a broad, konjugaton-faithful flag surface (categories A–J of
- * `settings/models.py`), persisted to filesDir/settings.json.
+ * App settings — a broad, konjugaton-faithful flag surface, persisted to
+ * filesDir/settings.json.
  *
  * Flags are tagged [active] (wired to behaviour) or [planned] (stored, not yet
  * acted on) — mirroring konjugaton's own annotation so the settings screen is
@@ -12,7 +12,6 @@ import com.konjugaton.hc.domain.AxisSelection
 import com.konjugaton.hc.domain.GradingSettings
 import com.konjugaton.hc.domain.IMPLEMENTED_KNOWLEDGE
 import com.konjugaton.hc.domain.KnowledgeType
-import com.konjugaton.hc.domain.Script
 import com.konjugaton.hc.domain.SessionOrder
 import java.io.File
 import kotlinx.serialization.Serializable
@@ -28,19 +27,15 @@ data class AppSettings(
     val sessionOrder: String = "adaptive", // [active] adaptive|easy-first|hard-first|random
 
     // --- Question filter (which exercises you get) ---------------------------
-    // answerScript: which script the verb is elicited in. "romanized" lets a
-    // learner who can't type Devanagari still answer; "both" = no restriction.
-    val answerScript: String = "both", // [active] both|devanagari|romanized
-    // questionMode: which question type(s). "multiple-choice" = no typing at all.
-    val questionMode: String = "all", // [active] all|multiple-choice|typed|transliterate
+    // questionType: which question type(s). "mcq" = no typing at all.
+    val questionType: String = "both", // [active] both|mcq|written
 
     // --- A · Answer acceptance ------------------------------------------------
     val ignoreCase: Boolean = true, // [active]
-    val ignoreAccents: Boolean = false, // [active] folds romanization variants
+    val ignoreAccents: Boolean = false, // [active] folds ä/ö/ü/ß
     val ignorePunctuation: Boolean = true, // [active]
     val similarityTolerance: Int = 0, // [active] 0..10, length-scaled NEAR window
     val requireSubjectPronoun: Boolean = false, // [planned]
-    val acceptEitherScript: Boolean = false, // [planned]
     val partialCreditPeriphrastic: Boolean = false, // [planned]
     val firstAttemptTypoGrace: Boolean = false, // [planned]
 
@@ -49,10 +44,9 @@ data class AppSettings(
     val showFullSentence: Boolean = true, // [active]
     val showTranslation: Boolean = true, // [active]
     val showItemDifficulty: Boolean = false, // [active]
-    // NOTE: the grammatical task (TAM/agreement/polarity) and the lemma are
-    // answerability-critical, so they are ALWAYS shown — deliberately NOT flags.
+    // NOTE: the grammatical task and the lemma are answerability-critical, so they
+    // are ALWAYS shown — deliberately NOT flags.
     val charDiffOnError: Boolean = false, // [planned]
-    val showLiteralGloss: Boolean = false, // [planned]
     val grammarHintOnError: Boolean = false, // [planned]
 
     // --- D · Adaptivity -------------------------------------------------------
@@ -63,9 +57,7 @@ data class AppSettings(
     val mcChoices: Int = 4, // [planned]
 
     // --- G · Scaffolding ------------------------------------------------------
-    val pollinateOnError: Boolean = false, // [planned]
     val showConjugationTableOnMiss: Boolean = false, // [planned]
-    val trackGrammarTags: Boolean = false, // [planned]
 
     // --- H · Motivation -------------------------------------------------------
     val streaks: Boolean = false, // [planned]
@@ -85,21 +77,14 @@ data class AppSettings(
         ignorePunctuation = ignorePunctuation,
     )
 
-    /** The session filter from the question-filter prefs (mirrors the Python
-     *  `selection_from_settings`). Empty axis = all values. */
+    /** The session filter from the question-type pref. Empty axis = all values. */
     fun selection(): AxisSelection {
-        val scripts = when (answerScript) {
-            "devanagari" -> listOf(Script.DEVANAGARI)
-            "romanized" -> listOf(Script.ROMANIZED)
-            else -> emptyList()
-        }
-        val knowledge = when (questionMode) {
-            "multiple-choice" -> listOf(KnowledgeType.RECOGNITION)
-            "typed" -> listOf(KnowledgeType.PRODUCTION)
-            "transliterate" -> listOf(KnowledgeType.TRANSLITERATION)
+        val knowledge = when (questionType) {
+            "mcq" -> listOf(KnowledgeType.RECOGNITION)
+            "written" -> listOf(KnowledgeType.PRODUCTION)
             else -> emptyList()
         }.filter { it in IMPLEMENTED_KNOWLEDGE }
-        return AxisSelection(scripts = scripts, knowledge = knowledge)
+        return AxisSelection(knowledge = knowledge)
     }
 
     fun order(): SessionOrder = when (sessionOrder) {

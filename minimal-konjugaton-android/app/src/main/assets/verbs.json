@@ -1,380 +1,510 @@
 {
   "verbs": [
     {
-      "lemma": "करना",
-      "lemma_roman": "karna",
-      "verb_class": "irregular",
-      "transitivity": "transitive",
+      "lemma": "machen",
       "translation": "to do/make",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
       "frequency_rank": 1,
       "semantic_tags": [
         "core",
         "action"
+      ]
+    },
+    {
+      "lemma": "sagen",
+      "translation": "to say",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 8,
+      "semantic_tags": [
+        "communication"
+      ]
+    },
+    {
+      "lemma": "spielen",
+      "translation": "to play",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 40,
+      "semantic_tags": [
+        "leisure"
+      ]
+    },
+    {
+      "lemma": "lernen",
+      "translation": "to learn",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 35,
+      "semantic_tags": [
+        "studies",
+        "cognition"
+      ]
+    },
+    {
+      "lemma": "kaufen",
+      "translation": "to buy",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 45,
+      "semantic_tags": [
+        "transaction"
+      ]
+    },
+    {
+      "lemma": "wohnen",
+      "translation": "to live/reside",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": false,
+      "frequency_rank": 60,
+      "semantic_tags": [
+        "state"
+      ]
+    },
+    {
+      "lemma": "arbeiten",
+      "translation": "to work",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": false,
+      "frequency_rank": 30,
+      "semantic_tags": [
+        "work"
+      ]
+    },
+    {
+      "lemma": "gehen",
+      "translation": "to go",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 3,
+      "family": "gehen",
+      "semantic_tags": [
+        "core",
+        "movement"
       ],
       "conjugation": {
-        "imperative_aap": "कीजिए",
-        "imperative_aap_roman": "kijiye",
-        "perfective": {
-          "devanagari": {
-            "sg|m": "किया",
-            "sg|f": "की",
-            "pl|m": "किए",
-            "pl|f": "कीं"
-          },
-          "romanized": {
-            "sg|m": "kiya",
-            "sg|f": "ki",
-            "pl|m": "kiye",
-            "pl|f": "kin"
-          }
-        }
+        "praeteritum_stem": "ging",
+        "partizip2": "gegangen",
+        "konjunktiv2_stem": "ging"
       }
     },
     {
-      "lemma": "होना",
-      "lemma_roman": "hona",
+      "lemma": "kommen",
+      "translation": "to come",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 5,
+      "family": "kommen",
+      "semantic_tags": [
+        "core",
+        "movement"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "kam",
+        "partizip2": "gekommen",
+        "konjunktiv2_stem": "käm"
+      }
+    },
+    {
+      "lemma": "sehen",
+      "translation": "to see",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 12,
+      "semantic_tags": [
+        "perception"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "sieh",
+        "praeteritum_stem": "sah",
+        "partizip2": "gesehen",
+        "konjunktiv2_stem": "säh"
+      }
+    },
+    {
+      "lemma": "geben",
+      "translation": "to give",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 15,
+      "family": "geben",
+      "semantic_tags": [
+        "transaction"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "gib",
+        "praeteritum_stem": "gab",
+        "partizip2": "gegeben",
+        "konjunktiv2_stem": "gäb"
+      }
+    },
+    {
+      "lemma": "nehmen",
+      "translation": "to take",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 20,
+      "semantic_tags": [
+        "transaction"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "nimm",
+        "praeteritum_stem": "nahm",
+        "partizip2": "genommen",
+        "konjunktiv2_stem": "nähm"
+      }
+    },
+    {
+      "lemma": "fahren",
+      "translation": "to drive/go",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 25,
+      "family": "fahren",
+      "semantic_tags": [
+        "movement",
+        "travel"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "fähr",
+        "praeteritum_stem": "fuhr",
+        "partizip2": "gefahren",
+        "konjunktiv2_stem": "führ"
+      }
+    },
+    {
+      "lemma": "finden",
+      "translation": "to find",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 22,
+      "semantic_tags": [
+        "perception",
+        "cognition"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "fand",
+        "partizip2": "gefunden",
+        "konjunktiv2_stem": "fänd"
+      }
+    },
+    {
+      "lemma": "essen",
+      "translation": "to eat",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 50,
+      "semantic_tags": [
+        "consumption"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "iss",
+        "praeteritum_stem": "aß",
+        "partizip2": "gegessen",
+        "konjunktiv2_stem": "äß"
+      }
+    },
+    {
+      "lemma": "sprechen",
+      "translation": "to speak",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 28,
+      "semantic_tags": [
+        "communication"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "sprich",
+        "praeteritum_stem": "sprach",
+        "partizip2": "gesprochen",
+        "konjunktiv2_stem": "spräch"
+      }
+    },
+    {
+      "lemma": "schlafen",
+      "translation": "to sleep",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": false,
+      "frequency_rank": 70,
+      "semantic_tags": [
+        "body"
+      ],
+      "conjugation": {
+        "praesens_stem_23": "schläf",
+        "praeteritum_stem": "schlief",
+        "partizip2": "geschlafen",
+        "konjunktiv2_stem": "schlief"
+      }
+    },
+    {
+      "lemma": "stehen",
+      "translation": "to stand",
+      "verb_class": "strong",
+      "auxiliary": "haben",
+      "transitive": false,
+      "frequency_rank": 55,
+      "family": "stehen",
+      "semantic_tags": [
+        "body",
+        "state"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "stand",
+        "partizip2": "gestanden",
+        "konjunktiv2_stem": "stünd"
+      }
+    },
+    {
+      "lemma": "denken",
+      "translation": "to think",
+      "verb_class": "mixed",
+      "auxiliary": "haben",
+      "transitive": false,
+      "frequency_rank": 33,
+      "semantic_tags": [
+        "cognition"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "dach",
+        "partizip2": "gedacht"
+      }
+    },
+    {
+      "lemma": "bringen",
+      "translation": "to bring",
+      "verb_class": "mixed",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 48,
+      "semantic_tags": [
+        "movement",
+        "transaction"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "brach",
+        "partizip2": "gebracht"
+      }
+    },
+    {
+      "lemma": "aufstehen",
+      "translation": "to get up",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 75,
+      "separable_prefix": "auf",
+      "semantic_tags": [
+        "body",
+        "movement"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "stand",
+        "partizip2": "gestanden",
+        "konjunktiv2_stem": "stünd"
+      }
+    },
+    {
+      "lemma": "ankommen",
+      "translation": "to arrive",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 65,
+      "separable_prefix": "an",
+      "semantic_tags": [
+        "movement",
+        "travel"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "kam",
+        "partizip2": "gekommen",
+        "konjunktiv2_stem": "käm"
+      }
+    },
+    {
+      "lemma": "mitkommen",
+      "translation": "to come along",
+      "verb_class": "strong",
+      "auxiliary": "sein",
+      "transitive": false,
+      "frequency_rank": 90,
+      "separable_prefix": "mit",
+      "semantic_tags": [
+        "movement",
+        "social"
+      ],
+      "conjugation": {
+        "praeteritum_stem": "kam",
+        "partizip2": "gekommen",
+        "konjunktiv2_stem": "käm"
+      }
+    },
+    {
+      "lemma": "einkaufen",
+      "translation": "to shop",
+      "verb_class": "weak",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 80,
+      "separable_prefix": "ein",
+      "semantic_tags": [
+        "transaction",
+        "daily"
+      ]
+    },
+    {
+      "lemma": "sein",
+      "translation": "to be",
       "verb_class": "irregular",
-      "transitivity": "intransitive",
-      "translation": "to be/become",
+      "auxiliary": "sein",
+      "transitive": false,
       "frequency_rank": 2,
       "semantic_tags": [
         "core",
         "state"
       ],
       "conjugation": {
-        "future_oblique": "हो",
-        "future_oblique_roman": "ho",
-        "perfective": {
-          "devanagari": {
-            "sg|m": "हुआ",
-            "sg|f": "हुई",
-            "pl|m": "हुए",
-            "pl|f": "हुईं"
+        "partizip2": "gewesen",
+        "irregular": {
+          "praesens": {
+            "1|sg": "bin",
+            "2|sg": "bist",
+            "3|sg": "ist",
+            "1|pl": "sind",
+            "2|pl": "seid",
+            "3|pl": "sind"
           },
-          "romanized": {
-            "sg|m": "hua",
-            "sg|f": "hui",
-            "pl|m": "hue",
-            "pl|f": "huin"
+          "praeteritum": {
+            "1|sg": "war",
+            "2|sg": "warst",
+            "3|sg": "war",
+            "1|pl": "waren",
+            "2|pl": "wart",
+            "3|pl": "waren"
+          },
+          "konjunktiv1": {
+            "1|sg": "sei",
+            "2|sg": "seist",
+            "3|sg": "sei",
+            "1|pl": "seien",
+            "2|pl": "seiet",
+            "3|pl": "seien"
+          },
+          "konjunktiv2": {
+            "1|sg": "wäre",
+            "2|sg": "wärst",
+            "3|sg": "wäre",
+            "1|pl": "wären",
+            "2|pl": "wärt",
+            "3|pl": "wären"
+          },
+          "imperativ": {
+            "2|sg": "sei",
+            "2|pl": "seid",
+            "3|pl": "seien"
           }
         }
       }
     },
     {
-      "lemma": "जाना",
-      "lemma_roman": "jana",
+      "lemma": "haben",
+      "translation": "to have",
       "verb_class": "irregular",
-      "transitivity": "intransitive",
-      "translation": "to go",
-      "frequency_rank": 3,
-      "family": "jana",
+      "auxiliary": "haben",
+      "transitive": true,
+      "frequency_rank": 4,
       "semantic_tags": [
         "core",
-        "movement"
+        "possession"
       ],
       "conjugation": {
-        "perfective": {
-          "devanagari": {
-            "sg|m": "गया",
-            "sg|f": "गई",
-            "pl|m": "गए",
-            "pl|f": "गईं"
+        "partizip2": "gehabt",
+        "irregular": {
+          "praesens": {
+            "1|sg": "habe",
+            "2|sg": "hast",
+            "3|sg": "hat",
+            "1|pl": "haben",
+            "2|pl": "habt",
+            "3|pl": "haben"
           },
-          "romanized": {
-            "sg|m": "gaya",
-            "sg|f": "gai",
-            "pl|m": "gaye",
-            "pl|f": "gain"
+          "praeteritum": {
+            "1|sg": "hatte",
+            "2|sg": "hattest",
+            "3|sg": "hatte",
+            "1|pl": "hatten",
+            "2|pl": "hattet",
+            "3|pl": "hatten"
+          },
+          "konjunktiv2": {
+            "1|sg": "hätte",
+            "2|sg": "hättest",
+            "3|sg": "hätte",
+            "1|pl": "hätten",
+            "2|pl": "hättet",
+            "3|pl": "hätten"
           }
         }
       }
     },
     {
-      "lemma": "देना",
-      "lemma_roman": "dena",
+      "lemma": "werden",
+      "translation": "to become",
       "verb_class": "irregular",
-      "transitivity": "transitive",
-      "translation": "to give",
+      "auxiliary": "sein",
+      "transitive": false,
       "frequency_rank": 6,
-      "family": "dena",
       "semantic_tags": [
-        "transaction"
-      ],
-      "conjugation": {
-        "future_oblique": "द",
-        "future_oblique_roman": "d",
-        "imperative_aap": "दीजिए",
-        "imperative_aap_roman": "dijiye",
-        "perfective": {
-          "devanagari": {
-            "sg|m": "दिया",
-            "sg|f": "दी",
-            "pl|m": "दिए",
-            "pl|f": "दीं"
-          },
-          "romanized": {
-            "sg|m": "diya",
-            "sg|f": "di",
-            "pl|m": "diye",
-            "pl|f": "din"
-          }
-        }
-      }
-    },
-    {
-      "lemma": "लेना",
-      "lemma_roman": "lena",
-      "verb_class": "irregular",
-      "transitivity": "transitive",
-      "translation": "to take",
-      "frequency_rank": 7,
-      "family": "lena",
-      "semantic_tags": [
-        "transaction"
-      ],
-      "conjugation": {
-        "future_oblique": "ल",
-        "future_oblique_roman": "l",
-        "imperative_aap": "लीजिए",
-        "imperative_aap_roman": "lijiye",
-        "perfective": {
-          "devanagari": {
-            "sg|m": "लिया",
-            "sg|f": "ली",
-            "pl|m": "लिए",
-            "pl|f": "लीं"
-          },
-          "romanized": {
-            "sg|m": "liya",
-            "sg|f": "li",
-            "pl|m": "liye",
-            "pl|f": "lin"
-          }
-        }
-      }
-    },
-    {
-      "lemma": "पीना",
-      "lemma_roman": "pina",
-      "verb_class": "irregular",
-      "transitivity": "transitive",
-      "translation": "to drink",
-      "frequency_rank": 40,
-      "semantic_tags": [
-        "consumption"
-      ],
-      "conjugation": {
-        "future_oblique": "पि",
-        "future_oblique_roman": "pi",
-        "imperative_aap": "पीजिए",
-        "imperative_aap_roman": "pijiye",
-        "perfective": {
-          "devanagari": {
-            "sg|m": "पिया",
-            "sg|f": "पी",
-            "pl|m": "पिए",
-            "pl|f": "पीं"
-          },
-          "romanized": {
-            "sg|m": "piya",
-            "sg|f": "pi",
-            "pl|m": "piye",
-            "pl|f": "pin"
-          }
-        }
-      }
-    },
-    {
-      "lemma": "खाना",
-      "lemma_roman": "khana",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to eat",
-      "frequency_rank": 25,
-      "semantic_tags": [
-        "consumption"
-      ]
-    },
-    {
-      "lemma": "आना",
-      "lemma_roman": "ana",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to come",
-      "frequency_rank": 9,
-      "family": "ana",
-      "semantic_tags": [
-        "movement",
-        "core"
-      ]
-    },
-    {
-      "lemma": "सोना",
-      "lemma_roman": "sona",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to sleep",
-      "frequency_rank": 80,
-      "semantic_tags": [
-        "body"
-      ]
-    },
-    {
-      "lemma": "बोलना",
-      "lemma_roman": "bolna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to speak",
-      "frequency_rank": 30,
-      "semantic_tags": [
-        "communication"
-      ]
-    },
-    {
-      "lemma": "पढ़ना",
-      "lemma_roman": "parhna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to read/study",
-      "frequency_rank": 35,
-      "semantic_tags": [
-        "cognition",
-        "studies"
-      ]
-    },
-    {
-      "lemma": "लिखना",
-      "lemma_roman": "likhna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to write",
-      "frequency_rank": 45,
-      "semantic_tags": [
-        "communication",
-        "studies"
-      ]
-    },
-    {
-      "lemma": "देखना",
-      "lemma_roman": "dekhna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to see/watch",
-      "frequency_rank": 12,
-      "semantic_tags": [
-        "perception"
-      ]
-    },
-    {
-      "lemma": "सुनना",
-      "lemma_roman": "sunna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to hear/listen",
-      "frequency_rank": 33,
-      "semantic_tags": [
-        "perception"
-      ]
-    },
-    {
-      "lemma": "समझना",
-      "lemma_roman": "samajhna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to understand",
-      "frequency_rank": 60,
-      "semantic_tags": [
-        "cognition"
-      ]
-    },
-    {
-      "lemma": "चलना",
-      "lemma_roman": "chalna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to walk/move",
-      "frequency_rank": 28,
-      "semantic_tags": [
-        "movement"
-      ]
-    },
-    {
-      "lemma": "रहना",
-      "lemma_roman": "rahna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to stay/live",
-      "frequency_rank": 15,
-      "semantic_tags": [
-        "state"
-      ]
-    },
-    {
-      "lemma": "कहना",
-      "lemma_roman": "kahna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to say",
-      "frequency_rank": 10,
-      "semantic_tags": [
-        "communication"
-      ]
-    },
-    {
-      "lemma": "बनना",
-      "lemma_roman": "banna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to become/be made",
-      "frequency_rank": 55,
-      "semantic_tags": [
+        "core",
         "change"
-      ]
-    },
-    {
-      "lemma": "मिलना",
-      "lemma_roman": "milna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to meet/be found",
-      "frequency_rank": 22,
-      "semantic_tags": [
-        "social"
-      ]
-    },
-    {
-      "lemma": "उठना",
-      "lemma_roman": "uthna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to get up/rise",
-      "frequency_rank": 70,
-      "semantic_tags": [
-        "body",
-        "movement"
-      ]
-    },
-    {
-      "lemma": "बैठना",
-      "lemma_roman": "baithna",
-      "verb_class": "regular",
-      "transitivity": "intransitive",
-      "translation": "to sit",
-      "frequency_rank": 75,
-      "semantic_tags": [
-        "body"
-      ]
-    },
-    {
-      "lemma": "खेलना",
-      "lemma_roman": "khelna",
-      "verb_class": "regular",
-      "transitivity": "transitive",
-      "translation": "to play",
-      "frequency_rank": 90,
-      "semantic_tags": [
-        "leisure"
-      ]
+      ],
+      "conjugation": {
+        "partizip2": "geworden",
+        "irregular": {
+          "praesens": {
+            "1|sg": "werde",
+            "2|sg": "wirst",
+            "3|sg": "wird",
+            "1|pl": "werden",
+            "2|pl": "werdet",
+            "3|pl": "werden"
+          },
+          "praeteritum": {
+            "1|sg": "wurde",
+            "2|sg": "wurdest",
+            "3|sg": "wurde",
+            "1|pl": "wurden",
+            "2|pl": "wurdet",
+            "3|pl": "wurden"
+          },
+          "konjunktiv2": {
+            "1|sg": "würde",
+            "2|sg": "würdest",
+            "3|sg": "würde",
+            "1|pl": "würden",
+            "2|pl": "würdet",
+            "3|pl": "würden"
+          }
+        }
+      }
     }
   ]
 }

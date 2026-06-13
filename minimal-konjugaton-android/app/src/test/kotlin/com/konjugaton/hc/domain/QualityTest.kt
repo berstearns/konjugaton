@@ -8,10 +8,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The reliability gate. Walks the ENTIRE realizable space (660,120 coordinates)
- * and asserts every generated exercise is *well-posed* (answerable), not merely
- * structurally valid — the task must pin TAM + agreement + construction +
- * polarity, and the item must self-grade CORRECT.
+ * The reliability gate. Walks the ENTIRE realizable German space and asserts every
+ * generated exercise is *well-posed* (answerable), not merely structurally valid —
+ * the task must pin tense-mood + person + number + register + voice + polarity, and
+ * the item must self-grade CORRECT.
  */
 class QualityTest {
 
@@ -26,12 +26,12 @@ class QualityTest {
 
     @Test fun `entire space generates well-posed items`() {
         val report = selfCheck.run()
-        assertTrue("space looks suspiciously small", report.coordinatesChecked > 100_000)
-        assertEquals(660_120, report.coordinatesChecked)
+        assertTrue("space looks suspiciously small", report.coordinatesChecked > 10_000)
+        assertEquals(space.count(), report.coordinatesChecked)
         assertTrue("quality failures:\n" + report.failures.joinToString("\n"), report.ok)
     }
 
-    @Test fun `self-check covers all TAMs and verbs`() {
+    @Test fun `self-check covers all tense-moods and verbs`() {
         val report = selfCheck.run()
         assertEquals(9, report.tams)
         assertTrue(report.verbs >= 20)
@@ -45,37 +45,55 @@ class QualityTest {
 
     // --- determinacy regressions ----------------------------------------------
 
-    @Test fun `negative perfect cloze presents the negative target and the ne-form`() {
+    @Test fun `negative perfekt cloze presents the negative target`() {
         val coord = Coordinate(
-            "करना", Tam.PERFECT, Person.P1, Number.SINGULAR, Gender.MASCULINE,
-            Honorific.NEUTRAL, Polarity.NEGATIVE, Script.DEVANAGARI,
-            KnowledgeType.PRODUCTION, catalog.contextIds.first(),
+            lemma = "machen",
+            tenseMood = TenseMood.PERFEKT,
+            person = Person.P1,
+            number = Number.SINGULAR,
+            register = Register.NEUTRAL,
+            polarity = Polarity.NEGATIVE,
+            knowledge = KnowledgeType.PRODUCTION,
+            context = catalog.contextIds.first(),
+            voice = Voice.AKTIV,
         )
         val item = generator.generate(coord, Random(0))
         assertTrue("task must say negative: '${item.task}'", "negative" in item.task)
-        assertTrue("task must say perfect: '${item.task}'", "perfect" in item.task)
-        assertEquals("नहीं किया है", item.answer) // object-default invariant + नहीं
-        assertTrue("मैंने" in item.fullSentence) // ने-ergative on the subject
+        assertTrue("task must say Perfekt: '${item.task}'", "Perfekt" in item.task)
+        assertEquals("habe nicht gemacht", item.answer)
+        assertTrue("ich" in item.fullSentence) // subject attached verb-second
         assertTrue(QualityEvaluator(catalog, conjugator).isWellPosed(item))
     }
 
-    @Test fun `feminine future cloze pins gender (which changes the tail)`() {
+    @Test fun `formal Sie cloze pins the register`() {
         val coord = Coordinate(
-            "बोलना", Tam.FUTURE, Person.P3, Number.SINGULAR, Gender.FEMININE,
-            Honorific.NEUTRAL, Polarity.AFFIRMATIVE, Script.DEVANAGARI,
-            KnowledgeType.PRODUCTION, catalog.contextIds.first(),
+            lemma = "machen",
+            tenseMood = TenseMood.IMPERATIV,
+            person = Person.P2,
+            number = Number.PLURAL,
+            register = Register.SIE,
+            polarity = Polarity.AFFIRMATIVE,
+            knowledge = KnowledgeType.PRODUCTION,
+            context = catalog.contextIds.first(),
+            voice = Voice.AKTIV,
         )
         val item = generator.generate(coord, Random(0))
-        assertTrue("task must pin gender (fem): '${item.task}'", "fem" in item.task)
-        assertEquals("बोलेगी", item.answer)
+        assertTrue("task must pin register (Sie): '${item.task}'", "Sie" in item.task)
+        assertEquals("machen Sie", item.answer)
         assertTrue(QualityEvaluator(catalog, conjugator).isWellPosed(item))
     }
 
     @Test fun `an item stripped of its task is detected as ill-posed`() {
         val coord = Coordinate(
-            "करना", Tam.PAST_HABITUAL, Person.P1, Number.SINGULAR, Gender.MASCULINE,
-            Honorific.NEUTRAL, Polarity.AFFIRMATIVE, Script.DEVANAGARI,
-            KnowledgeType.PRODUCTION, catalog.contextIds.first(),
+            lemma = "machen",
+            tenseMood = TenseMood.PRAETERITUM,
+            person = Person.P1,
+            number = Number.SINGULAR,
+            register = Register.NEUTRAL,
+            polarity = Polarity.AFFIRMATIVE,
+            knowledge = KnowledgeType.PRODUCTION,
+            context = catalog.contextIds.first(),
+            voice = Voice.AKTIV,
         )
         val good = generator.generate(coord, Random(0))
         val stripped = good.copy(task = "")

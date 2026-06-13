@@ -172,18 +172,23 @@ class ExerciseGenerator:
         return " · ".join(bits)
 
     def _irt(self, verb_class: VerbClass, coordinate: Coordinate, n_choices: int) -> IrtParameters:
-        b = _TENSE_BASE.get(coordinate.tense_mood, 0.5)
-        b += _CLASS_DELTA[verb_class.value]
-        if coordinate.polarity is Polarity.NEGATIVE:
-            b += 0.15
-        if coordinate.voice is Voice.PASSIV:
-            b += 0.4
-        b += _KNOWLEDGE_DELTA.get(coordinate.knowledge, 0.0)
-        b = max(-3.0, min(3.0, b))
-        guessing = 1.0 / n_choices if n_choices else 0.0
-        return IrtParameters(
-            difficulty=round(b, 3), discrimination=1.0, guessing=round(guessing, 3)
-        )
+        return seed_irt(verb_class, coordinate, n_choices)
+
+
+def seed_irt(verb_class: VerbClass, coordinate: Coordinate, n_choices: int) -> IrtParameters:
+    """Heuristic IRT seed from a cell's features. Shared by every item builder
+    (:class:`ExerciseGenerator` and the conjugation-table builder) so both paths
+    seed difficulty identically. Transparent and overrideable once data exists."""
+    b = _TENSE_BASE.get(coordinate.tense_mood, 0.5)
+    b += _CLASS_DELTA[verb_class.value]
+    if coordinate.polarity is Polarity.NEGATIVE:
+        b += 0.15
+    if coordinate.voice is Voice.PASSIV:
+        b += 0.4
+    b += _KNOWLEDGE_DELTA.get(coordinate.knowledge, 0.0)
+    b = max(-3.0, min(3.0, b))
+    guessing = 1.0 / n_choices if n_choices else 0.0
+    return IrtParameters(difficulty=round(b, 3), discrimination=1.0, guessing=round(guessing, 3))
 
 
 def _agreement(c: Coordinate) -> Agreement:
